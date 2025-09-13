@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "skipLibCheck": true,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true,
+    "target": "es5",
+    "declaration": false,
+    "lib": [
+      "es5",
+      "dom"
+    ],
+    "sourceMap": true,
+    "types": [
+      "cypress",
+      "node"
+    ]
+  },
+  "include": [
+    "./vite.config.*"
+  ]
+}

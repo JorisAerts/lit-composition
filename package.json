@@ -1,0 +1,68 @@
+{
+  "name": "lit-composition",
+  "description": "Lit utils",
+  "keywords": [
+    "lit",
+    "webcomponents"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JorisAerts/lit-composition.git"
+  },
+  "author": {
+    "name": "Joris Aerts",
+    "url": "https://github.com/JorisAerts"
+  },
+  "private": true,
+  "version": "0.0.1-alpha",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "prepublishOnly": "pnpm run dist",
+    "dist": "(node scripts/prepare-publish.js) && (pnpm vite build) && (cd dist/build && pnpm pack --pack-destination ..)",
+    "lint": "eslint . --ext .ts,.tsx,.js,.jsx,.mjs,.cjs,.json,.yml",
+    "format": "prettier --write .",
+    "test": "pnpm test:unit --run && pnpm cy:run",
+    "test:unit": "vitest",
+    "cy:open": "cypress open",
+    "cy:run": "cypress run --component"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.36.0",
+    "@lit/context": "^1.1.6",
+    "@microsoft/api-extractor": "^7.52.13",
+    "@stylistic/eslint-plugin": "^5.4.0",
+    "@tsconfig/node24": "^24.0.1",
+    "@types/node": "^24.5.2",
+    "cypress": "^15.3.0",
+    "cypress-ct-lit": "^1.0.0",
+    "eslint": "^9.36.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-lit": "2.1.1",
+    "globals": "^16.3.0",
+    "lit": "^3.3.1",
+    "prettier": "^3.6.2",
+    "terser": "^5.44.0",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.44.1",
+    "unplugin-dts": "1.0.0-beta.6",
+    "vite": "^7.1.7",
+    "vitest": "^3.2.4"
+  },
+  "peerDependencies": {
+    "@lit/context": ">=1.0.0",
+    "lit": ">=3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@lit/context": {
+      "optional": true
+    }
+  },
+  "packageManager": "pnpm@10.17.1+sha512.17c560fca4867ae9473a3899ad84a88334914f379be46d455cbf92e5cf4b39d34985d452d2583baf19967fa76cb5c17bc9e245529d0b98745721aa7200ecaf7a"
+}

@@ -1,0 +1,28 @@
+{
+  "extends": "../tsconfig.node.json",
+  "compilerOptions": {
+    "composite": true,
+    "skipLibCheck": true,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true,
+    "target": "es5",
+    "lib": [
+      "es5",
+      "dom"
+    ],
+    "sourceMap": true,
+    "types": [
+      "vitest",
+      "node"
+    ]
+  },
+  "exclude": [
+    "./**/*.cy.ts"
+  ],
+  "include": [
+    "../src/**/*.ts",
+    "./**/*.d.ts",
+    "./**/*.spec.ts"
+  ]
+}

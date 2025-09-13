@@ -1,0 +1,32 @@
+{
+  "extends": "../tsconfig.node.json",
+  "compilerOptions": {
+    "composite": true,
+    "skipLibCheck": true,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true,
+    "target": "ES2022",
+    "experimentalDecorators": false,
+    "emitDecoratorMetadata": false,
+    "useDefineForClassFields": false,
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "sourceMap": true,
+    "types": [
+      "cypress",
+      "node"
+    ]
+  },
+  "exclude": [
+    "./**/*.spec.ts"
+  ],
+  "include": [
+    "../cypress/cypress.d.ts",
+    "../src/**/*.ts",
+    "./**/*.cy.ts"
+  ]
+}
