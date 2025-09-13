@@ -1,0 +1,28 @@
+{
+  "extends": "../tsconfig.app.json",
+  "compilerOptions": {
+    "composite": true,
+    "skipLibCheck": true,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true,
+    "target": "es5",
+    "lib": [
+      "es5",
+      "dom"
+    ],
+    "sourceMap": true,
+    "types": [
+      "cypress",
+      "node"
+    ]
+  },
+  "exclude": [
+    "cypress.config.ts"
+  ],
+  "include": [
+    "./**/*.d.ts",
+    "./**/*.ts",
+    "./cypress.d.ts"
+  ]
+}

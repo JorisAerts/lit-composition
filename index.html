@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Lit-suiker</title>
+    <style>
+        html, body {
+            color-scheme: dark;
+            height: 100%;
+            font-family: sans-serif;
+        }
+
+        body {
+            padding: 2em;
+            margin: 0;
+            background: #202020;
+            color: #eee;
+        }
+    </style>
+    <script type="module" src="/src/index.ts"></script>
+    <script type="module">
+
+        import {defineComponent, ref} from "./src";
+        import {html} from "lit";
+
+        defineComponent({
+            name: 'my-element',
+            setup() {
+                const counter = ref(1)
+                setInterval(() => counter.value++, 250)
+                return () => html`<h1>Hello World! (${counter.value})</h1>`
+            }
+        })
+
+    </script>
+</head>
+<body>
+<my-element>
+    <h1>Lit-suiker</h1>
+</my-element>
+</body>
+</html>

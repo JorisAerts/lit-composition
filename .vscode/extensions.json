@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "editorconfig.editorconfig",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "egordorichev.lit-lang",
+    "antfu.vite",
+    "vitest.explorer"
+  ]
+}
