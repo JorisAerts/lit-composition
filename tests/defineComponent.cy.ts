@@ -1,4 +1,4 @@
-import { html } from 'lit'
+import { css, html, unsafeCSS } from 'lit'
 import { defineComponent, onConnected } from '../src/defineComponent'
 
 describe('defineComponent', () => {
@@ -58,6 +58,114 @@ describe('defineComponent', () => {
 
       cy.mount(html` <test-default-props></test-default-props> `).as('component')
       cy.get('@component').find('div').contains('test').should('exist')
+    })
+  })
+
+  describe('styles', () => {
+    it('styles should be applied correctly on a ShadowRoot', () => {
+      defineComponent({
+        name: 'test-styles-1',
+        styles: css`
+          div {
+            font-size: 32px;
+            font-weight: 900;
+            color: rgb(255, 215, 0);
+          }
+        `,
+        setup() {
+          return () => html`<div>Gold! 🥇</div>`
+        },
+      })
+
+      cy.mount(html` <test-styles-1></test-styles-1> `).as('component')
+      cy.get('@component')
+        .shadow()
+        .find('div')
+        .contains('Gold! 🥇')
+        .should('have.css', 'color', 'rgb(255, 215, 0)')
+        .and('have.css', 'font-weight', '900')
+        .and('have.css', 'font-size', '32px')
+    })
+
+    it('styles should not be applied when no ShadowRoot', () => {
+      defineComponent({
+        name: 'test-styles-2',
+        styles: css`
+          div {
+            font-size: 32px;
+            font-weight: 900;
+            color: rgb(255, 215, 0);
+          }
+        `,
+        shadowRoot: false,
+        setup() {
+          return () => html`<div>Gold! 🥇</div>`
+        },
+      })
+
+      cy.mount(html` <test-styles-2></test-styles-2> `).as('component')
+      cy.get('@component')
+        //
+        .find('div')
+        .contains('Gold! 🥇')
+        .should('not.have.css', 'font-size', '32px')
+    })
+
+    it('styles array should render as expected', () => {
+      defineComponent({
+        name: 'test-styles-3',
+        styles: [
+          css`
+            div {
+              color: rgb(255, 215, 0);
+            }
+          `,
+          css`
+            div {
+              font-size: 32px;
+              font-weight: 900;
+            }
+          `,
+        ],
+        setup() {
+          return () => html`<div>Gold! 🥇</div>`
+        },
+      })
+
+      cy.mount(html` <test-styles-3></test-styles-3> `).as('component')
+      cy.get('@component')
+        .shadow()
+        .find('div')
+        .contains('Gold! 🥇')
+        .should('have.css', 'color', 'rgb(255, 215, 0)')
+        .and('have.css', 'font-weight', '900')
+        .and('have.css', 'font-size', '32px')
+    })
+
+    it('using injected variables should work', () => {
+      const color = 'rgb(255, 215, 0)'
+      defineComponent({
+        name: 'test-styles-injected-variables',
+        styles: css`
+          div {
+            color: ${unsafeCSS(color)};
+            font-size: 32px;
+            font-weight: 900;
+          }
+        `,
+        setup() {
+          return () => html`<div>Gold! 🥇</div>`
+        },
+      })
+
+      cy.mount(html` <test-styles-injected-variables></test-styles-injected-variables> `).as('component')
+      cy.get('@component')
+        .shadow()
+        .find('div')
+        .contains('Gold! 🥇')
+        .should('have.css', 'color', 'rgb(255, 215, 0)')
+        .and('have.css', 'font-weight', '900')
+        .and('have.css', 'font-size', '32px')
     })
   })
 

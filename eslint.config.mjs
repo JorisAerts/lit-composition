@@ -105,6 +105,23 @@ export default [
     },
   },
 
+  {
+    files: ['tests/**/*.cy.{js,mjs,cjs,ts}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['vitest', 'vitest/*'],
+              message: 'Vitest imports are not allowed in Cypress test files. Use Cypress testing utilities instead.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+
   // Webpack & other old school CommonJS
   {
     globals: globals.node,

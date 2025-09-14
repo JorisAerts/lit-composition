@@ -1,7 +1,5 @@
 import { defineConfig } from 'cypress'
 
-type Framework = Cypress.DevServerConfigOptions['framework']
-
 export default defineConfig({
   fileServerFolder: '.',
   modifyObstructiveCode: false,
