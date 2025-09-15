@@ -1,7 +1,5 @@
 import type { CSSResultGroup, PropertyDeclaration, PropertyValues } from 'lit'
 import { LitElement } from 'lit'
-import { customElement } from 'lit/decorators.js'
-import type { Mixin } from './utils'
 import { dummyFn } from './utils'
 import type { Class } from './types'
 import { isFunction, isUndefined } from './utils/is'
@@ -70,33 +68,32 @@ export const onConnected = <Type extends DefinedComponentInstance>(cb: SomeFunct
 type ComponentName = `${string}-${string}`
 
 export const defineComponent = <
-  Name extends ComponentName = ComponentName,
-  Properties extends Record<string, DefinePropertyDeclaration> = Record<string, DefinePropertyDeclaration>,
-  Styles extends CSSResultGroup = CSSResultGroup,
-  Mixins extends Mixin<unknown>[] = Mixin<unknown>[],
-  Parent extends typeof LitElement = typeof LitElement,
-  Instance extends InstanceType<Parent> = InstanceType<Parent> & ExtractProperties<Properties> & {},
-  Render extends (this: Instance) => unknown = (this: Instance) => unknown,
-  Setup extends (this: Instance, comp?: Instance) => void | Render = (this: Instance, comp?: Instance) => void | Render,
+  Name extends ComponentName,
+  Properties extends Record<string, DefinePropertyDeclaration>,
+  Styles extends CSSResultGroup,
+  Parent extends typeof LitElement,
+  Instance extends InstanceType<Parent> & ExtractProperties<Properties>,
+  Render extends (this: Instance) => unknown,
+  Setup extends (this: Instance, comp?: Instance) => void | Render,
 >(options: {
   name: Name
   parent?: typeof LitElement
   styles?: Styles
   props?: Properties
-  mixins?: Mixins
 
+  register: boolean
   shadowRoot?: boolean
 
   setup?: Setup
   render?: Render
-}) => {
+}): typeof LitElement => {
   options = Object.create(options) as typeof options
 
-  const { name, parent: BaseClass = LitElement } = options
+  const { name, parent: BaseClass = LitElement, register } = options
   const render = options.render ?? dummyFn
 
-  @customElement(name)
-  class DefinedComponent extends BaseClass {
+  //@customElement(name)
+  const result = class extends BaseClass {
     /** @internal */
     [DEFINE_COMPONENT_OPTIONS]: InternalOptions<this> = {
       render,
@@ -174,7 +171,11 @@ export const defineComponent = <
     }
   }
 
-  return DefinedComponent
+  if (register != false) {
+    // register the component
+    customElements.define(name, result)
+  }
+  return result
 }
 
 type DefinedComponent = ReturnType<typeof defineComponent>

@@ -1,1 +1,1 @@
-export const DEFINE_COMPONENT_OPTIONS = Symbol('𝜋')
+export const DEFINE_COMPONENT_OPTIONS = Symbol(`𝜄`)

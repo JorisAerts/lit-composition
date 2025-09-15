@@ -6,6 +6,7 @@
     "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true,
     "target": "es5",
+    "noEmit": true,
     "lib": [
       "es5",
       "dom"
@@ -17,7 +18,7 @@
     ]
   },
   "include": [
-    "./cypress/cypress.config.ts",
+    "./cypress/**",
     "./vite.config.*"
   ]
 }
