@@ -1,5 +1,5 @@
 {
-  "extends": "../tsconfig.app.json",
+  "extends": "../tsconfig.node.json",
   "compilerOptions": {
     "composite": true,
     "skipLibCheck": true,
@@ -18,9 +18,6 @@
       "node"
     ]
   },
-  "exclude": [
-    "../cypress.config.ts"
-  ],
   "include": [
     "./**/*.d.ts",
     "./**/*.ts",

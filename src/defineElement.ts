@@ -30,7 +30,7 @@ const assignDefaultValues = <T extends HTMLElement>(obj: T, props?: Record<strin
 
 type ValidHtmlTagName = `${string}-${string}`
 
-const defineComponentWithOptions = <
+const defineElementWithOptions = <
   Name extends ValidHtmlTagName,
   Properties extends Record<string, DefinePropertyDeclaration>,
   Styles extends CSSResultGroup,
@@ -76,7 +76,13 @@ const defineComponentWithOptions = <
     }
 
     render() {
-      return this.__opts.render?.call(this)
+      const old = getCurrentInstance()
+      setCurrentInstance(this)
+      try {
+        return this.__opts.render?.call(this)
+      } finally {
+        setCurrentInstance(old)
+      }
     }
   }
 
@@ -86,18 +92,18 @@ const defineComponentWithOptions = <
   return result as unknown as typeof LitElement
 }
 
-export type DefinedComponent = ReturnType<typeof defineComponent>
+export type DefinedComponent = ReturnType<typeof defineElement>
 export type DefinedComponentInstance = InstanceType<DefinedComponent>
 
 const defineFunctionalComponent = (name: ValidHtmlTagName, render: () => unknown) =>
-  defineComponentWithOptions({ name, render, shadowRoot: false })
+  defineElementWithOptions({ name, render, shadowRoot: false })
 
-export function defineComponent(name: ValidHtmlTagName, render: () => unknown): typeof LitElement
-export function defineComponent(options: Parameters<typeof defineComponentWithOptions>[0]): typeof LitElement
-export function defineComponent(
-  ...args: [ValidHtmlTagName, () => unknown] | [Parameters<typeof defineComponentWithOptions>[0]]
+export function defineElement(name: ValidHtmlTagName, render: () => unknown): typeof LitElement
+export function defineElement(options: Parameters<typeof defineElementWithOptions>[0]): typeof LitElement
+export function defineElement(
+  ...args: [ValidHtmlTagName, () => unknown] | [Parameters<typeof defineElementWithOptions>[0]]
 ) {
   return isString(args[0])
     ? defineFunctionalComponent(args[0], args[1] as () => unknown)
-    : defineComponentWithOptions(args[0])
+    : defineElementWithOptions(args[0])
 }

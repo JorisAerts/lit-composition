@@ -2,18 +2,17 @@ import { html, LitElement } from 'lit'
 import { consume as $consume, createContext, provide as $provide } from '@lit/context'
 import { customElement } from 'lit/decorators.js'
 
-import { defineComponent } from '../src/defineComponent'
-import { provide } from '../src/context/provide'
-import { inject } from '../src/context/inject'
+import { defineElement } from '../src'
+import { inject, provide } from '../src/context'
 
 describe('context', () => {
   describe('provide', () => {
     // define a component
 
-    it('defineComponent ≫ LitElement', () => {
+    it('defineElement ≫ LitElement', () => {
       const context = createContext(Symbol('test-context-1'))
 
-      defineComponent({
+      defineElement({
         name: 'test-provide-1',
         shadowRoot: false,
         setup() {
@@ -25,7 +24,7 @@ describe('context', () => {
       @customElement('test-consume-1')
       class Test extends LitElement {
         @$consume({ context })
-        accessor test
+        accessor test: string | undefined
 
         render() {
           return html`<div>${this.test}</div>`
@@ -36,7 +35,7 @@ describe('context', () => {
       cy.get('@component').find('div').contains('ok').should('exist')
     })
 
-    it('LitElement ≫ defineComponent', () => {
+    it('LitElement ≫ defineElement', () => {
       const context = createContext(Symbol('test-context-2'))
 
       @customElement('test-provide-2')
@@ -49,7 +48,7 @@ describe('context', () => {
         }
       }
 
-      defineComponent({
+      defineElement({
         name: 'test-consume-2',
         shadowRoot: false,
         setup() {

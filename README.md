@@ -4,7 +4,7 @@
 
 
 A tiny toolkit for building Lit Web Components with less boilerplate.
-It requires no decorators required and allows developers to write approved standardized JavaScript / TypeScript.
+It requires no decorators and allows developers to write approved standardized JavaScript / TypeScript.
 
 ## Why lit-composition?
 
@@ -20,7 +20,7 @@ It requires no decorators required and allows developers to write approved stand
 - Composable lifecycle hooks (onConnected, onUpdated, …)
 - Reactive state with useRef and derived values with computed
 - Two ways to render: return a function from setup(), or provide render()
-- Fast shorthand: defineComponent('my-tag', () => html`...`)
+- Fast shorthand: defineElement('my-tag', () => html`...`)
 - Shadow DOM control via shadowRoot: false
 - Real LitElement subclass under the hood
 
@@ -48,13 +48,13 @@ yarn add @lit/context
 
 ## Quick start
 
-Minimal component with defineComponent:
+Minimal component with defineElement:
 
 ```ts
-import {defineComponent, onConnected} from 'lit-composition'
+import {defineElement, onConnected} from 'lit-composition'
 import {html} from 'lit'
 
-const MyHello = defineComponent({
+const MyHello = defineElement({
     name: 'my-hello',
     props: {
         who: {type: String},
@@ -70,10 +70,10 @@ const MyHello = defineComponent({
 Fast one-liner (functional) form:
 
 ```ts
-import {defineComponent} from 'lit-composition'
+import {defineElement} from 'lit-composition'
 import {html} from 'lit'
 
-defineComponent('my-hello', () => html`Hello, World!`)
+defineElement('my-hello', () => html`Hello, World!`)
 ```
 
 ## No decorators required
@@ -97,10 +97,10 @@ class MyHello extends LitElement {
 
 ```ts
 // lit-composition (no decorators)
-import {defineComponent} from 'lit-composition'
+import {defineElement} from 'lit-composition'
 import {html} from 'lit'
 
-defineComponent({
+defineElement({
     name: 'my-hello',
     props: {who: {type: String, default: 'World'}},
     render() {
@@ -125,10 +125,10 @@ Hooks map 1:1 to Lit lifecycle methods:
 Example:
 
 ```ts
-import {defineComponent, onConnected, onUpdated} from 'lit-composition'
+import {defineElement, onConnected, onUpdated} from 'lit-composition'
 import {html} from 'lit'
 
-defineComponent({
+defineElement({
     name: 'with-hooks',
     setup() {
         onConnected(() => console.log('mounted'))
@@ -143,10 +143,10 @@ defineComponent({
 Use `shadowRoot: false` instead of overriding createRenderRoot:
 
 ```ts
-import {defineComponent} from 'lit-composition'
+import {defineElement} from 'lit-composition'
 import {html} from 'lit'
 
-defineComponent({
+defineElement({
     name: 'light-dom',
     shadowRoot: false,
     render() {
@@ -161,10 +161,10 @@ Maintain small reactive bits of state that integrate with Lit updates without ne
 for a mutable reactive value and computed() for derived values.
 
 ```ts
-import {defineComponent, useRef, computed} from 'lit-composition'
+import {defineElement, useRef, computed} from 'lit-composition'
 import {html} from 'lit'
 
-defineComponent({
+defineElement({
     name: 'with-refs',
     shadowRoot: false,
     setup() {
@@ -186,10 +186,10 @@ The props option uses Lit’s property declaration shape. Types are inferred fro
 Declarative defaults (literal or factory):
 
 ```ts
-import {defineComponent} from 'lit-composition'
+import {defineElement} from 'lit-composition'
 import {html} from 'lit'
 
-defineComponent({
+defineElement({
     name: 'with-defaults',
     props: {
         count: {type: Number, default: 1},
@@ -206,10 +206,10 @@ defineComponent({
 Imperative defaults in setup:
 
 ```ts
-import {defineComponent} from 'lit-composition'
+import {defineElement} from 'lit-composition'
 import {html} from 'lit'
 
-defineComponent({
+defineElement({
     name: 'with-props',
     props: {count: {type: Number}},
     setup() {
@@ -224,11 +224,112 @@ Precedence notes:
 - Attributes/props passed by the user win over defaults.
 - Values you set in setup() also win; defaults only fill undefined.
 
+## Context: provide & inject (with @lit/context)
+
+lit-composition ships tiny helpers on top of @lit/context so you can share data across a component tree without decorators.
+They are fully interoperable with Lit’s own @provide and @consume decorators.
+
+Install note: @lit/context is an optional peer dependency; install it if you use these helpers (see Installation above).
+
+Basic usage
+
+```ts
+import {html} from 'lit'
+import {defineElement} from 'lit-composition'
+import {createContext} from '@lit/context'
+import {provide, inject} from 'lit-composition/context'
+
+// 1) Create a context once (module scope)
+const userContext = createContext<{name: string}>(Symbol('user'))
+
+// 2) Provide somewhere high in your tree
+defineElement({
+  name: 'user-provider',
+  setup() {
+    provide(userContext, {name: 'Ada'})
+    return () => html`<slot></slot>`
+  },
+})
+
+// 3) Inject (consume) downstream
+defineElement({
+  name: 'user-greeting',
+  shadowRoot: false,
+  setup() {
+    const user = inject(userContext) // ContextConsumer with a reactive .value
+    return () => html`Hello, ${user.value.name}!`
+  },
+})
+```
+
+Interoperability with Lit decorators
+
+You can mix and match providers/consumers across lit-composition and classic Lit components.
+
+- defineElement provides → Lit consumes (@consume):
+
+```ts
+import {html, LitElement} from 'lit'
+import {customElement} from 'lit/decorators.js'
+import {consume as consumeDec, createContext} from '@lit/context'
+import {defineElement} from 'lit-composition'
+import {provide} from 'lit-composition/context'
+
+const ctx = createContext<string>(Symbol('demo'))
+
+defineElement({
+  name: 'demo-provide',
+  setup() {
+    provide(ctx, 'ok')
+    return () => html`<lit-consumer></lit-consumer>`
+  },
+})
+
+@customElement('lit-consumer')
+class LitConsumer extends LitElement {
+  @consumeDec({context: ctx}) accessor value!: string
+  render() { return html`<div>${this.value}</div>` }
+}
+```
+
+- Lit provides (@provide) → defineElement consumes (inject):
+
+```ts
+import {html, LitElement} from 'lit'
+import {customElement} from 'lit/decorators.js'
+import {provide as provideDec, createContext} from '@lit/context'
+import {defineElement} from 'lit-composition'
+import {inject} from 'lit-composition/context'
+
+const ctx = createContext<string>(Symbol('demo-2'))
+
+@customElement('lit-provider')
+class LitProvider extends LitElement {
+  @provideDec({context: ctx}) accessor provided = 'from lit'
+  render() { return html`<comp-consumer></comp-consumer>` }
+}
+
+defineElement({
+  name: 'comp-consumer',
+  shadowRoot: false,
+  setup() {
+    const v = inject(ctx)
+    return () => html`<div>${v.value}</div>`
+  },
+})
+```
+
+Notes
+
+- provide(context, value) and inject(context) must be called during setup(), so there is a current component instance.
+- inject() returns a live ContextConsumer with a .value property and subscribes to updates; using .value in render will re-render when it changes.
+- These helpers just wrap @lit/context under the hood; anything that works with @provide/@consume also works across lit-composition components.
+
 ## Options reference
 
-Call it either as defineComponent(options) or as a fast shorthand defineComponent(name, render).
+Call it either as defineElement(options) or as a fast shorthand defineElement(name, render).
 
-Supported defineComponent options (compact overview):
+Supported defineElement options (compact overview):
 
 - name?: string — tag name; auto-registers unless register: false
 - register?: boolean — disable automatic customElements.define

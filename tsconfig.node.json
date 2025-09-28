@@ -18,6 +18,9 @@
     ]
   },
   "include": [
-    "./vite.config.*"
+    "./cypress",
+    "./tests",
+    "./vite.config.*",
+    "./cypress.config.*"
   ]
 }

@@ -1,14 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import { html, LitElement } from 'lit'
-import { defineComponent } from '../src/defineComponent'
+import { defineElement } from '../src/defineElement'
 
-describe('defineComponent', () => {
+describe('defineElement', () => {
   it('Test component is a LitElement', () => {
-    const component = defineComponent({
+    const component = defineElement({
       name: 'test-defined',
       props: {
         test: { type: String },
-        test2: { type: Object as unknown as ReturnType<typeof defineComponent> },
+        test2: { type: Object as unknown as ReturnType<typeof defineElement> },
       },
       render() {
         return html`<div>ok</div>`

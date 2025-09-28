@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Lit-suiker</title>
+    <title>Lit-composition</title>
     <style>
         html, body {
             color-scheme: dark;
@@ -21,25 +21,25 @@
     <script type="module" src="/src/index.ts"></script>
     <script type="module">
 
-        import {defineComponent, useRef} from "./src";
+        import {defineElement, useRef} from "./src";
         import {html} from "lit";
 
-        const el = defineComponent({
+        const el = defineElement({
             name: 'my-element',
             props: {
-                teste: 'ok'
+                welcome: 'Hello World!'
             },
             setup() {
                 const counter = useRef(1)
                 setInterval(() => counter.value++, 250)
-                return () => html`<h1>Hello World! (${counter.value})</h1>`
+                return () => html`<h1>${this.welcome} (${counter.value})</h1>`
             }
         })
     </script>
 </head>
 <body>
 <my-element>
-    <h1>Lit-suiker</h1>
+    <h1>Lit-composition</h1>
 </my-element>
 </body>
 </html>

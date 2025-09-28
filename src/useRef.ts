@@ -59,18 +59,25 @@ export function effect(fn: EffectFn): () => void {
 
 export const useRef = <T>(value: T) => {
   const object = { value } as { value: T } as UseRef<T>
-  const instance = getCurrentInstance()
+  // Track component instances that read this ref so we can notify all of them on change
+  const subscribers = new Set<any>()
+
   Object.defineProperty(object, 'value', {
     configurable: false,
     get: () => {
       track(object, 'value')
+      const instance = getCurrentInstance()
+      if (instance) subscribers.add(instance)
       return value
     },
     set: (v: T) => {
       const old = value
       if (Object.is(old, v)) return
       value = v
-      instance.requestUpdate(undefined, old)
+      // Notify all subscribed component instances
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-return,@typescript-eslint/no-unsafe-member-access
+      subscribers.forEach((inst) => inst.requestUpdate?.(undefined, old))
+      // Notify effects
       trigger(object, 'value')
     },
   })
@@ -86,7 +93,6 @@ export function computed<T>(options: { get: ComputedGetter<T>; set?: ComputedSet
 export function computed<T>(
   arg: ComputedGetter<T> | { get: ComputedGetter<T>; set?: ComputedSetter<T> }
 ): ComputedRef<T> {
-  const instance = getCurrentInstance()
   const getFn: ComputedGetter<T> = typeof arg === 'function' ? arg : arg.get
   const setFn: ComputedSetter<T> | undefined = typeof arg === 'function' ? undefined : arg.set
 
@@ -95,13 +101,20 @@ export function computed<T>(
 
   // A dummy ref-like target to host dependency for 'value'
   const target = {} as { value: T }
+  // Track components that consume this computed value
+  const subscribers = new Set<any>()
+
+  const notifySubscribers = (old?: T) => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-return,@typescript-eslint/no-unsafe-member-access
+    subscribers.forEach((inst) => inst.requestUpdate?.(undefined, old))
+  }
 
   const recompute = () => {
     const old = cached
     cached = getFn()
     dirty = false
     if (!Object.is(old, cached)) {
-      instance.requestUpdate(undefined, old)
+      notifySubscribers(old)
       trigger(target, 'value')
     }
   }
@@ -112,7 +125,8 @@ export function computed<T>(
     // We read them within an effect to register the dep graph.
     getFn()
     dirty = true
-    // Notify readers that value became stale/changed
+    // Notify readers (both effects and components) that value became stale/changed
+    notifySubscribers()
     trigger(target, 'value')
   })
 
@@ -121,6 +135,8 @@ export function computed<T>(
     configurable: false,
     get: () => {
       track(target, 'value')
+      const instance = getCurrentInstance()
+      if (instance) subscribers.add(instance)
       if (dirty) {
         recompute()
       }
@@ -131,6 +147,7 @@ export function computed<T>(
       setFn(v)
       // After a write through setter, mark as dirty and schedule recompute on next get
       dirty = true
+      notifySubscribers()
       trigger(target, 'value')
     },
   })
