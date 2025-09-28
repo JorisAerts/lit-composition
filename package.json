@@ -1,21 +1,23 @@
 {
   "name": "lit-composition",
-  "description": "Lit utils",
+  "description": "Library for creating Lit elements leveraging a composition API.",
   "keywords": [
-    "lit",
-    "webcomponents"
+    "Lit",
+    "Web Components",
+    "Composition",
+    "API"
   ],
+  "author": {
+    "name": "Joris Aerts",
+    "url": "https://github.com/JorisAerts"
+  },
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/JorisAerts/lit-composition.git"
   },
-  "author": {
-    "name": "Joris Aerts",
-    "url": "https://github.com/JorisAerts"
-  },
   "private": true,
-  "version": "0.0.1-alpha",
+  "version": "0.0.2",
   "type": "module",
   "files": [
     "dist"
@@ -25,7 +27,7 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "prepublishOnly": "pnpm run dist",
-    "dist": "(node scripts/prepare-publish.js) && (pnpm vite build) && (cd dist/build && pnpm pack --pack-destination ..)",
+    "dist": "(pnpm test) && (node scripts/prepare-publish.js) && (pnpm vite build) && (cd dist/build && pnpm pack --pack-destination ..)",
     "lint": "eslint . --ext .ts,.tsx,.js,.jsx,.mjs,.cjs,.json,.yml",
     "format": "prettier --write .",
     "test": "pnpm test:unit --run && pnpm cy:run",

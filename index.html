@@ -21,10 +21,10 @@
     <script type="module" src="/src/index.ts"></script>
     <script type="module">
 
-        import {defineComponent, useRef} from "./src";
+        import {defineElement, useRef} from "./src";
         import {html} from "lit";
 
-        const el = defineComponent({
+        const el = defineElement({
             name: 'my-element',
             props: {
                 teste: 'ok'

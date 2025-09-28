@@ -1,9 +1,9 @@
-import { defineComponent, onConnected } from '../src'
+import { defineElement, onConnected } from '../src'
 import { html } from 'lit'
 
 describe('hooks', () => {
   it('onConnected', () => {
-    defineComponent({
+    defineElement({
       name: 'test-el',
       props: { test: { type: String } },
       shadowRoot: false,

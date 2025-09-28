@@ -1,17 +1,17 @@
 import { css, html, unsafeCSS } from 'lit'
 import { customElement } from 'lit/decorators.js'
-import { defineComponent, onConnected } from '../src/'
+import { defineElement, onConnected } from '../src/'
 
-describe('defineComponent', () => {
+describe('defineElement', () => {
   describe('rendering', () => {
     it('Component renders correctly (simple)', () => {
       // define a component
-      defineComponent({
+      defineElement({
         name: 'test-defined-1',
 
         props: {
           test: { type: String },
-          test2: { type: Object as unknown as ReturnType<typeof defineComponent> },
+          test2: { type: Object as unknown as ReturnType<typeof defineElement> },
         },
 
         render() {
@@ -25,7 +25,7 @@ describe('defineComponent', () => {
 
     it('Component renders correctly (fast notation)', () => {
       // define a component
-      defineComponent('test-fast-1', () => html`<div>ok</div>`)
+      defineElement('test-fast-1', () => html`<div>ok</div>`)
 
       cy.mount(html` <test-fast-1></test-fast-1> `).as('component')
       cy.get('@component').find('div').contains('ok').should('exist')
@@ -33,12 +33,12 @@ describe('defineComponent', () => {
     })
 
     it('Test light vs shadow DOM', () => {
-      defineComponent({
+      defineElement({
         name: 'test-defined-2',
 
         props: {
           test: { type: String },
-          test2: { type: Object as unknown as ReturnType<typeof defineComponent> },
+          test2: { type: Object as unknown as ReturnType<typeof defineElement> },
         },
 
         render() {
@@ -46,7 +46,7 @@ describe('defineComponent', () => {
         },
       })
 
-      defineComponent({
+      defineElement({
         name: 'test-no-shadow',
         shadowRoot: false,
         props: { test: { type: String } },
@@ -63,11 +63,11 @@ describe('defineComponent', () => {
     })
 
     it('Component renders default prop values', () => {
-      defineComponent({
+      defineElement({
         name: 'test-default-props',
         props: {
           test: { type: String, default: 'test' },
-          test2: { type: Object as unknown as ReturnType<typeof defineComponent>, default: () => 'test2' },
+          test2: { type: Object as unknown as ReturnType<typeof defineElement>, default: () => 'test2' },
         },
         shadowRoot: false,
         render() {
@@ -82,7 +82,7 @@ describe('defineComponent', () => {
 
   describe('styles', () => {
     it('styles should be applied correctly on a ShadowRoot', () => {
-      defineComponent({
+      defineElement({
         name: 'test-styles-1',
         styles: css`
           div {
@@ -107,7 +107,7 @@ describe('defineComponent', () => {
     })
 
     it('styles should not be applied when no ShadowRoot', () => {
-      defineComponent({
+      defineElement({
         name: 'test-styles-2',
         styles: css`
           div {
@@ -131,7 +131,7 @@ describe('defineComponent', () => {
     })
 
     it('styles array should render as expected', () => {
-      defineComponent({
+      defineElement({
         name: 'test-styles-3',
         styles: [
           css`
@@ -163,7 +163,7 @@ describe('defineComponent', () => {
 
     it('using injected variables should work', () => {
       const color = 'rgb(255, 215, 0)'
-      defineComponent({
+      defineElement({
         name: 'test-styles-injected-variables',
         styles: css`
           div {
@@ -190,7 +190,7 @@ describe('defineComponent', () => {
 
   describe('hooks', () => {
     it('onConnected', () => {
-      defineComponent({
+      defineElement({
         name: 'test-on-connected-1',
         props: {
           test: { type: String, default: 'test' },
@@ -210,7 +210,7 @@ describe('defineComponent', () => {
     })
 
     it('onConnected with default scope', () => {
-      defineComponent({
+      defineElement({
         name: 'test-on-connected-2',
         props: {
           test: { type: String, default: 'test' },
@@ -232,7 +232,7 @@ describe('defineComponent', () => {
     })
 
     it('onConnected with setup this-scope', () => {
-      defineComponent({
+      defineElement({
         name: 'test-on-connected-3',
         props: {
           test: { type: String, default: 'test' },
@@ -258,7 +258,7 @@ describe('defineComponent', () => {
   describe('inheritance', () => {
     it('super-hooks are called from DefinedComponent ⇢ LitComponent', () => {
       let connected = false
-      const Defined = defineComponent({
+      const Defined = defineElement({
         props: {
           test: { type: String },
           test2: { type: Object as unknown as typeof Date, default: () => 'test2' },

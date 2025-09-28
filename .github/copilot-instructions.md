@@ -11,23 +11,23 @@ this as the source of truth when generating code.
 - lit-composition provides TypeScript-first helpers for building Lit web components.
 - Focus: strong typing, ergonomic component definition, composable lifecycle hooks, optional shadow DOM, and simple
   mixin support.
-- Core entry points: `src/index.ts`, `src/defineComponent.ts`, `src/hooks/`, `src/context/`, `src/utils/`.
+- Core entry points: `src/index.ts`, `src/defineElement.ts`, `src/hooks/`, `src/context/`, `src/utils/`.
 
 ## 2) Mental model
 
-- You define components via defineComponent(options). It returns a LitElement subclass and can register it as a custom
+- You define components via defineElement(options). It returns a LitElement subclass and can register it as a custom
   element when a name is provided.
 - You can supply either:
     - render(): a standard Lit render function, or
     - setup(): a function that may return a render function and is the place to wire hooks, side effects, and defaults.
 - Lifecycle hooks are added via onConnected, onUpdated, etc. They are composable and may be called inside setup.
 
-## 3) defineComponent API (from src/defineComponent.ts)
+## 3) defineElement API (from src/defineElement.ts)
 
 Signature (simplified):
 
 ```text
-export const defineComponent = (options: {
+export const defineElement = (options: {
   name?: string // must include a dash per custom element spec
   parent?: typeof LitElement // default: LitElement
   styles?: CSSResultGroup
@@ -47,7 +47,7 @@ Important implementation details to rely on:
   the render function; otherwise, `options.render` (or the base class render) is used (lines ~144–158).
 - Default prop values are assigned after setup via `assignDefaultValues(this, options.props)` (line ~152).
 
-## 4) Lifecycle hooks (exposed by defineComponent)
+## 4) Lifecycle hooks (exposed by defineElement)
 
 Available helpers (lines ~66–82):
 
@@ -69,9 +69,9 @@ Example:
 
 ```ts
 import {html} from 'lit'
-import {defineComponent} from './defineComponent'
+import {defineElement} from './defineElement'
 
-export const MyCounter = defineComponent({
+export const MyCounter = defineElement({
     name: 'my-counter',
     props: {count: {type: Number, reflect: true}},
     setup() {
@@ -117,7 +117,7 @@ Note on PropType helper:
 - Set `shadowRoot: false` to render into the light DOM of the host element.
 
 ```ts
-defineComponent({
+defineElement({
     name: 'no-shadow', shadowRoot: false, render() { /* ... */
     }
 })
@@ -148,7 +148,7 @@ defineComponent({
 ## 12) Project layout
 
 - src/: core library code
-    - defineComponent.ts: the primary API
+    - defineElement.ts: the primary API
     - hooks/: hook infra and exports
     - context/: experimental context helpers
     - utils/: shared utilities (mixin, is, symbols, etc.)
@@ -183,7 +183,7 @@ Don’t:
 
 - Don’t introduce reactive state managers in core; reactivity is intentionally not built‑in (future patterns are TBD).
 - Don’t register elements in unexpected places (e.g., inside mixins or module top‑level side effects unrelated to
-  defineComponent calls).
+  defineElement calls).
 - Don’t assume Shadow DOM when `shadowRoot: false` is set; account for style scoping.
 
 ## 15) Copy‑pasteable templates
@@ -192,9 +192,9 @@ Basic component with render():
 
 ```ts
 import {html, css} from 'lit'
-import {defineComponent} from './defineComponent'
+import {defineElement} from './defineElement'
 
-export const HelloWorld = defineComponent({
+export const HelloWorld = defineElement({
     name: 'hello-world',
     styles: css`:host{display:block;padding:4px}`,
     props: {
@@ -210,9 +210,9 @@ Setup‑driven with hooks and light DOM:
 
 ```ts
 import {html} from 'lit'
-import {defineComponent} from './defineComponent'
+import {defineElement} from './defineElement'
 
-export const Clicker = defineComponent({
+export const Clicker = defineElement({
     name: 'my-clicker',
     shadowRoot: false,
     props: {count: {type: Number}},
@@ -227,7 +227,7 @@ export const Clicker = defineComponent({
 
 Before opening a PR or accepting Copilot’s suggestion, verify:
 
-- API usage matches the current defineComponent contract (name/register/shadowRoot/props/styles/setup/render).
+- API usage matches the current defineElement contract (name/register/shadowRoot/props/styles/setup/render).
 - Hooks are called during setup and not at runtime/after render creation.
 - Props use correct types and defaults; reflect/attribute options are intentional.
 - Shadow vs light DOM implications are handled (styling, selectors).
@@ -236,10 +236,10 @@ Before opening a PR or accepting Copilot’s suggestion, verify:
 
 ## 17) Common prompts for Copilot/ChatGPT (good examples)
 
-- “Create a Lit component using defineComponent that renders into light DOM and registers onConnected and onUpdated
+- “Create a Lit component using defineElement that renders into light DOM and registers onConnected and onUpdated
   hooks.”
 - “Add a boolean prop with default true and reflect it as an attribute; update render to toggle a CSS class.”
-- “Convert this class component into defineComponent with a setup() that returns a render function.”
+- “Convert this class component into defineElement with a setup() that returns a render function.”
 - “Write Vitest for this component to assert it increments count on click.”
 
 ## 18) Need help or see gaps?

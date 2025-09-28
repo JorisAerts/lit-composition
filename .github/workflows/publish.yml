@@ -1,0 +1,42 @@
+name: Publish Package
+branding:
+  icon: package
+  color: red
+
+on:
+  workflow_dispatch:
+#  push:
+#    tags:
+#      - "v*"
+
+jobs:
+  publish:
+    # prevents this action from running on forks
+    if: github.repository == 'JorisAerts/lit-composition'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    environment: Release
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda
+
+      - name: Set node version to 24
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org/
+          package-manager-cache: false
+
+      - name: Install deps
+        run: pnpm install
+
+      - name: Dist
+        run: pnpm dist
+
+      - name: Publish package
+        run: npm i -g npm@^11.5.2 && cd dist && pnpm publish ./lit-composition-0.0.1-alpha.tgz --tag release --access public

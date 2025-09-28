@@ -1,10 +1,10 @@
 import { html } from 'lit'
-import { defineComponent, onConnected } from '../src'
+import { defineElement, onConnected } from '../src'
 import { computed, useRef } from '../src/useRef'
 
 describe('useRef', () => {
   it('useRef should be reactive', () => {
-    defineComponent({
+    defineElement({
       name: 'test-use-ref-1',
       shadowRoot: false,
       setup() {
@@ -19,8 +19,8 @@ describe('useRef', () => {
   })
 
   it('useRef should be reactive (part 2)', () => {
-    const buttonId = self.crypto.randomUUID() ?? Math.random().toString(36)
-    defineComponent({
+    const buttonId = globalThis.crypto.randomUUID() ?? Math.random().toString(36)
+    defineElement({
       name: 'test-use-ref-2',
       shadowRoot: false,
       setup() {
@@ -41,7 +41,7 @@ describe('useRef', () => {
 
 describe('computed', () => {
   it('computed should be reactive when a Ref changes', () => {
-    defineComponent({
+    defineElement({
       name: 'test-computed-1',
       shadowRoot: false,
       setup() {
@@ -54,5 +54,48 @@ describe('computed', () => {
 
     cy.mount(html` <test-computed-1></test-computed-1> `).as('component')
     cy.get('@component').contains('ok-ok').should('exist')
+  })
+
+  it('computed chaining', () => {
+    defineElement({
+      name: 'test-computed-2',
+      shadowRoot: false,
+      setup() {
+        const test = useRef(1)
+        const comp = computed(() => test.value * 2)
+        const comp2 = computed(() => comp.value * 4)
+        return () => html`result: ${comp2.value}`
+      },
+    })
+
+    cy.mount(html` <test-computed-2></test-computed-2> `).as('component')
+    cy.get('@component').contains('result: 8').should('exist')
+  })
+
+  it('computed chaining updates', () => {
+    defineElement({
+      name: 'test-computed-3',
+      shadowRoot: false,
+      setup() {
+        const test = useRef(1)
+        const comp = computed(() => test.value * 2)
+        const comp2 = computed(() => comp.value * 4)
+        return () =>
+          html`<span>${comp2.value}</span>
+            <button @click="${() => test.value++}">Increase</button> `
+      },
+    })
+
+    cy.mount(html` <test-computed-3></test-computed-3> `).as('component')
+    cy.get('@component').find('span').as('result')
+    cy.get('@component').find('button').as('button')
+
+    cy.get('@result').should('contain', '8')
+
+    cy.get('@button').click()
+    cy.get('@result').should('contain', '16')
+
+    cy.get('@button').click()
+    cy.get('@result').should('contain', '24')
   })
 })
