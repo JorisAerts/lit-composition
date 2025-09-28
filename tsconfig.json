@@ -1,12 +1,5 @@
 {
   "extends": "@tsconfig/node24/tsconfig.json",
-  "compilerOptions": {
-    "noEmit": true
-  },
-  "include": [
-    "cypress",
-    "tests"
-  ],
   "references": [
     {
       "path": "./tsconfig.app.json"

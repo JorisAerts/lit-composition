@@ -82,6 +82,7 @@ export default [
     rules: {
       ...TSESLint.configs.disableTypeChecked.rules,
       'no-undef': ['off'],
+      '@typescript-eslint/no-unused-vars': ['off'],
       '@typescript-eslint/no-unused-expressions': ['off'],
     },
     languageOptions: {
@@ -119,18 +120,6 @@ export default [
           ],
         },
       ],
-    },
-  },
-
-  // Webpack & other old school CommonJS
-  {
-    globals: globals.node,
-    files: ['**/*.cjs'],
-    languageOptions: {
-      sourceType: 'commonjs',
-    },
-    rules: {
-      '@typescript-eslint/no-require-imports': ['off'],
     },
   },
 
