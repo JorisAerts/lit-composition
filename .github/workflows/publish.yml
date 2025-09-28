@@ -1,7 +1,4 @@
 name: Publish Package
-branding:
-  icon: package
-  color: red
 
 on:
   workflow_dispatch:
@@ -39,4 +36,7 @@ jobs:
         run: pnpm dist
 
       - name: Publish package
-        run: npm i -g npm@^11.5.2 && cd dist && pnpm publish ./lit-composition-0.0.1-alpha.tgz --tag release --access public
+        run: |
+          npm i -g npm@^11.5.2
+          cd dist 
+          pnpm publish ./lit-composition-0.0.1-alpha.tgz --tag release --access public
