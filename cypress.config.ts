@@ -14,7 +14,7 @@ export default defineConfig({
   experimentalWebKitSupport: true,
   retries: {
     runMode: 4,
-    openMode: 1,
+    openMode: 0,
   },
   includeShadowDom: true,
   component: {

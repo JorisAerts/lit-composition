@@ -37,6 +37,46 @@ describe('useRef', () => {
       cy.get('@button').click()
     })
   })
+
+  it('shared refs among web components', () => {
+    //
+    const test = useRef(0)
+    defineElement({
+      name: 'test-shared-ref-1a',
+      shadowRoot: false,
+      setup() {
+        return () => html`<button id="button1" @click="${() => test.value++}">${test.value}</button>`
+      },
+    })
+    defineElement({
+      name: 'test-shared-ref-1b',
+      shadowRoot: false,
+      setup() {
+        return () => html`<button id="button2" @click="${() => test.value++}">${test.value}</button>`
+      },
+    })
+
+    cy.mount(
+      html`<div>
+        <test-shared-ref-1a></test-shared-ref-1a>
+        <test-shared-ref-1b></test-shared-ref-1b>
+      </div>`
+    ).as('component')
+
+    cy.get('@component').find(`#button1`).as('button1')
+    cy.get('@component').find(`#button2`).as('button2')
+
+    cy.get('@button1').contains(`0`).should('exist')
+    cy.get('@button2').contains(`0`).should('exist')
+
+    cy.get('@button1').click()
+    cy.get('@button1').contains(`1`).should('exist')
+    cy.get('@button2').contains(`1`).should('exist')
+
+    cy.get('@button2').click()
+    cy.get('@button1').contains(`2`).should('exist')
+    cy.get('@button2').contains(`2`).should('exist')
+  })
 })
 
 describe('computed', () => {
