@@ -1,6 +1,5 @@
 import { html } from 'lit'
-import { defineElement, effect, onConnected } from '../src'
-import { computed, useRef } from '../src/useRef'
+import { computed, defineElement, onConnected, useRef, watchEffect } from '../src'
 
 describe('useRef', () => {
   it('useRef should be reactive', () => {
@@ -170,7 +169,7 @@ describe('computed', () => {
   })
 })
 
-describe('effect', () => {
+describe('watchEffect', () => {
   it('runs once immediately and re-runs when its deps (Ref) change', () => {
     const calls: number[] = []
 
@@ -179,8 +178,8 @@ describe('effect', () => {
       shadowRoot: false,
       setup() {
         const count = useRef(0)
-        effect(() => {
-          // track side-effect executions with the current value
+        watchEffect(() => {
+          // track side-watchEffect executions with the current value
           calls.push(count.value)
         })
         return () => html`<button id="btn" @click="${() => count.value++}">${count.value}</button>`
@@ -190,34 +189,34 @@ describe('effect', () => {
     cy.mount(html` <test-effect-1></test-effect-1> `).as('component')
     cy.get('@component').find('#btn').as('btn')
 
-    // effect runs immediately with initial value 0
+    // watchEffect runs immediately with initial value 0
     cy.get('@component').then(() => {
       expect(calls).to.deep.equal([0])
     })
 
     cy.get('@btn').click()
     cy.get('@component').then(() => {
-      // effect should re-run with updated value 1
+      // watchEffect should re-run with updated value 1
       expect(calls).to.deep.equal([0, 1])
     })
 
     cy.get('@btn').click()
     cy.get('@component').then(() => {
-      // effect should re-run again with updated value 2
+      // watchEffect should re-run again with updated value 2
       expect(calls).to.deep.equal([0, 1, 2])
     })
   })
 
-  it('tracks multiple refs used inside the same effect', () => {
+  it('tracks multiple refs used inside the same watchEffect', () => {
     const snapshots: [number, number][] = []
 
     defineElement({
-      name: 'test-effect-2',
+      name: 'test-watch-effect-2',
       shadowRoot: false,
       setup() {
         const a = useRef(1)
         const b = useRef(10)
-        effect(() => {
+        watchEffect(() => {
           snapshots.push([a.value, b.value])
         })
         return () => html`
@@ -227,7 +226,7 @@ describe('effect', () => {
       },
     })
 
-    cy.mount(html` <test-effect-2></test-effect-2> `).as('component')
+    cy.mount(html` <test-watch-effect-2></test-watch-effect-2> `).as('component')
     cy.get('@component').find('#a').as('btnA')
     cy.get('@component').find('#b').as('btnB')
 
@@ -253,17 +252,17 @@ describe('effect', () => {
     })
   })
 
-  it.skip('effect reactivity through computed chains', () => {
+  it.skip('watchEffect reactivity through computed chains', () => {
     const seen: number[] = []
 
     defineElement({
-      name: 'test-effect-3',
+      name: 'test-watch-effect-3',
       shadowRoot: false,
       setup() {
         const base = useRef(2)
         const double = computed(() => base.value * 2)
         const quadruple = computed(() => double.value * 2)
-        effect(() => {
+        watchEffect(() => {
           // should re-run when base changes, via computed chain
           seen.push(quadruple.value)
         })
@@ -271,7 +270,7 @@ describe('effect', () => {
       },
     })
 
-    cy.mount(html` <test-effect-3></test-effect-3> `).as('component')
+    cy.mount(html` <test-watch-effect-3></test-watch-effect-3> `).as('component')
     cy.get('@component').find('#inc').as('inc')
 
     cy.get('@component').then(() => {
@@ -294,17 +293,17 @@ describe('effect', () => {
     const e2: number[] = []
 
     defineElement({
-      name: 'test-effect-4',
+      name: 'test-watch-effect-4',
       shadowRoot: false,
       setup() {
         const n = useRef(0)
-        effect(() => e1.push(n.value))
-        effect(() => e2.push(n.value * 10))
+        watchEffect(() => e1.push(n.value))
+        watchEffect(() => e2.push(n.value * 10))
         return () => html`<button id="go" @click="${() => n.value++}">${n.value}</button>`
       },
     })
 
-    cy.mount(html` <test-effect-4></test-effect-4> `).as('component')
+    cy.mount(html` <test-watch-effect-4></test-watch-effect-4> `).as('component')
     cy.get('@component').find('#go').as('go')
 
     cy.get('@component').then(() => {

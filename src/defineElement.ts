@@ -1,10 +1,11 @@
 import type { CSSResultGroup, PropertyDeclaration } from 'lit'
 import { LitElement } from 'lit'
 import { dummyFn } from './utils'
-import type { Class } from './types'
+import type { Class, ValidCustomElementName } from './types'
 import { isFunction, isString, isUndefined } from './utils/is'
-import { getCurrentInstance, setCurrentInstance } from './currentInstance'
+import { withCurrentInstance } from './currentInstance'
 import { withHooks } from './hooks'
+import { defineCustomElement } from './browser.js'
 
 type ExtractProperties<Props extends Record<string, PropertyDeclaration>> = {
   [K in keyof Props]: Props[K] extends PropertyDeclaration
@@ -28,10 +29,8 @@ const assignDefaultValues = <T extends HTMLElement>(obj: T, props?: Record<strin
 
 // END-OF-HOOKS
 
-type ValidHtmlTagName = `${string}-${string}`
-
 const defineElementWithOptions = <
-  Name extends ValidHtmlTagName,
+  Name extends ValidCustomElementName,
   Properties extends Record<string, DefinePropertyDeclaration>,
   Styles extends CSSResultGroup,
   Parent extends typeof LitElement,
@@ -54,7 +53,6 @@ const defineElementWithOptions = <
   const { name, parent: BaseClass = LitElement, register } = options
   const SuperClass = withHooks(BaseClass)
 
-  //@customElement(name)
   const result = class extends SuperClass {
     static properties = options.props ?? ({} as Properties)
     static styles = options.styles ?? undefined
@@ -65,29 +63,23 @@ const defineElementWithOptions = <
 
     constructor() {
       super()
-      const old = getCurrentInstance()
-      setCurrentInstance(this)
-      const setupResult = options.setup?.call(this as unknown as Instance, this as unknown as Instance)
-      this.__opts.render = isFunction(setupResult) //
-        ? setupResult
-        : (options.render ?? super.render.bind(this) ?? dummyFn)
-      assignDefaultValues(this, options.props)
-      setCurrentInstance(old)
+      withCurrentInstance(this, () => {
+        assignDefaultValues(this, options.props)
+        const setupResult = options.setup?.call(this as unknown as Instance, this as unknown as Instance)
+        this.__opts.render = isFunction(setupResult) //
+          ? setupResult
+          : (options.render ?? super.render.bind(this) ?? dummyFn)
+      })
     }
 
     render() {
-      const old = getCurrentInstance()
-      setCurrentInstance(this)
-      try {
-        return this.__opts.render?.call(this)
-      } finally {
-        setCurrentInstance(old)
-      }
+      return withCurrentInstance(this, () => this.__opts.render?.call(this))
     }
   }
 
+  // register the component
   if (register != false && name) {
-    customElements.define(name, result)
+    defineCustomElement(name, result)
   }
   return result as unknown as typeof LitElement
 }
@@ -95,13 +87,13 @@ const defineElementWithOptions = <
 export type DefinedComponent = ReturnType<typeof defineElement>
 export type DefinedComponentInstance = InstanceType<DefinedComponent>
 
-const defineFunctionalComponent = (name: ValidHtmlTagName, render: () => unknown) =>
+const defineFunctionalComponent = (name: ValidCustomElementName, render: () => unknown) =>
   defineElementWithOptions({ name, render, shadowRoot: false })
 
-export function defineElement(name: ValidHtmlTagName, render: () => unknown): typeof LitElement
+export function defineElement(name: ValidCustomElementName, render: () => unknown): typeof LitElement
 export function defineElement(options: Parameters<typeof defineElementWithOptions>[0]): typeof LitElement
 export function defineElement(
-  ...args: [ValidHtmlTagName, () => unknown] | [Parameters<typeof defineElementWithOptions>[0]]
+  ...args: [ValidCustomElementName, () => unknown] | [Parameters<typeof defineElementWithOptions>[0]]
 ) {
   return isString(args[0])
     ? defineFunctionalComponent(args[0], args[1] as () => unknown)

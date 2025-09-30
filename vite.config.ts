@@ -23,21 +23,13 @@ export default defineConfig({
       fileName: (format, entryName) => `${entryName}.${format === 'es' ? 'js' : 'cjs'}`,
     },
     sourcemap: true,
-    minify: 'terser',
-    terserOptions: {
-      sourceMap: true,
-      format: {
-        braces: false,
-        comments: false,
-      },
-      compress: {
-        passes: 4,
-        booleans: true,
-      },
-    },
+    minify: 'esbuild',
     rollupOptions: {
       external: externalPackages,
-      output: { compact: true },
+      output: {
+        compact: true,
+        indent: false,
+      },
     },
   },
   plugins: [

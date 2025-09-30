@@ -17,7 +17,7 @@
     "url": "https://github.com/JorisAerts/lit-composition.git"
   },
   "private": true,
-  "version": "0.0.4",
+  "version": "0.0.5",
   "type": "module",
   "files": [
     "dist"
@@ -38,10 +38,10 @@
   "devDependencies": {
     "@eslint/js": "^9.36.0",
     "@lit/context": "^1.1.6",
-    "@microsoft/api-extractor": "^7.52.13",
+    "@microsoft/api-extractor": "^7.52.14",
     "@stylistic/eslint-plugin": "^5.4.0",
     "@tsconfig/node24": "^24.0.1",
-    "@types/node": "^24.5.2",
+    "@types/node": "^24.6.0",
     "cypress": "^15.3.0",
     "cypress-ct-lit": "^1.0.0",
     "eslint": "^9.36.0",
@@ -50,9 +50,8 @@
     "globals": "^16.3.0",
     "lit": "^3.3.1",
     "prettier": "^3.6.2",
-    "terser": "^5.44.0",
     "typescript": "^5.9.2",
-    "typescript-eslint": "^8.44.1",
+    "typescript-eslint": "^8.45.0",
     "unplugin-dts": "1.0.0-beta.6",
     "vite": "^7.1.7",
     "vitest": "^3.2.4"

@@ -7,6 +7,7 @@
     "allowSyntheticDefaultImports": true,
     "target": "es5",
     "declaration": false,
+    "outDir": "node_modules/.cache/lit-composition",
     "lib": [
       "es5",
       "dom"
