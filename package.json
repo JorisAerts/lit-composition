@@ -17,7 +17,7 @@
     "url": "https://github.com/JorisAerts/lit-composition.git"
   },
   "private": true,
-  "version": "0.0.5",
+  "version": "0.0.6",
   "type": "module",
   "files": [
     "dist"
