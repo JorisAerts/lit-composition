@@ -76,7 +76,13 @@ const defineElementWithOptions = <
     }
 
     render() {
-      return this.__opts.render?.call(this)
+      const old = getCurrentInstance()
+      setCurrentInstance(this)
+      try {
+        return this.__opts.render?.call(this)
+      } finally {
+        setCurrentInstance(old)
+      }
     }
   }
 
