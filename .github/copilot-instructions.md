@@ -1,10 +1,67 @@
-# Copilot Instructions + Contributor Guide for lit-composition
 
-This document gives AI coding assistants (Copilot/ChatGPT) and human contributors the finest context to work effectively
-on lit-composition. It describes the architecture, APIs, preferred patterns, do/don't rules, and copy‑pasteable
-examples.
-Treat
-this as the source of truth when generating code.
+# Copilot Instructions for lit-composition
+
+>This guide enables AI coding agents to be productive in the lit-composition codebase. It merges prior instructions with updated, actionable, codebase-specific guidance.
+
+## Architecture & Key Concepts
+- **Core API:** Components are defined via `defineElement(options)` (see `src/defineElement.ts`). This returns a LitElement subclass and optionally registers it as a custom element.
+- **Component Options:** Supply either `render()` (declarative) or `setup()` (imperative, returns a render function and wires hooks/state).
+- **Lifecycle Hooks:** Use `onConnected`, `onUpdated`, etc. inside `setup()` for composable lifecycle logic. See `src/hooks.ts`.
+- **Props & Defaults:** Props use Lit’s property declaration shape. Defaults can be set in `props` or imperatively in `setup()`. See `README.md` and `src/types.ts`.
+- **Shadow DOM Control:** Default is Shadow DOM; set `shadowRoot: false` to render into light DOM. See `README.md` for examples.
+- **Context:** Use `provide` and `inject` from `src/context/` for dependency injection (wraps @lit/context). Must be called in `setup()`.
+- **Mixins:** Use function mixins from `src/utils/mixin.ts` for class composition. Avoid side effects in mixins.
+
+## Project Structure
+- `src/`: Core library (APIs, hooks, context, utils)
+- `tests/`: Vitest unit tests (see `tests/defineElement.spec.ts`)
+- `cypress/`: Cypress component/E2E tests (see `cypress.config.ts`)
+- `scripts/`: Maintenance scripts (e.g., `prepare-publish.js`)
+
+## Developer Workflows
+- **Dev server:** `pnpm dev` (Vite)
+- **Build:** `pnpm build`
+- **Unit tests:** `pnpm test` (Vitest)
+- **Cypress tests:** `pnpm cypress` or use config in `cypress.config.ts`
+- **Publish prep:** `node scripts/prepare-publish.js`
+
+## Patterns & Conventions
+- **No decorators:** Use plain options, not TS decorators (see `README.md` for comparison).
+- **Props:** Prefer explicit types and defaults. Use narrow types for better DX.
+- **Hooks:** Always call lifecycle hooks inside `setup()`.
+- **Light DOM:** When using `shadowRoot: false`, style scoping is manual.
+- **Context:** Only use `provide`/`inject` in `setup()`. Peer dependency: `@lit/context`.
+- **Testing:** Place focused tests next to modules. For Lit components, use DOM assertions and `await el.updateComplete`.
+
+## Integration Points
+- **Peer dependencies:** `lit` (required), `@lit/context` (optional for context helpers).
+- **Exports:** Main entry is `src/index.ts`. Context helpers in `src/context/`.
+
+## Example: Minimal Component
+```ts
+import {defineElement, onConnected} from 'lit-composition'
+import {html} from 'lit'
+
+const MyHello = defineElement({
+  name: 'my-hello',
+  props: {who: {type: String}},
+  setup() {
+    onConnected(() => console.log('connected'))
+    return () => html`Hello, ${this.who}`
+  },
+})
+```
+
+## Quality Checklist for AI Agents
+- Use correct API signatures for `defineElement` and hooks
+- Props: types and defaults are intentional
+- Hooks: only called in `setup()`
+- Shadow/light DOM: handle styling appropriately
+- Tests: update/add as needed; ensure `pnpm test` passes
+- No global side effects (e.g., element registration outside `defineElement`)
+
+---
+If any section is unclear or incomplete, please provide feedback or open an issue/PR to improve these instructions.
 
 ## 1) What is lit-composition?
 
