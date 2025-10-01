@@ -2,9 +2,9 @@ name: Publish Package
 
 on:
   workflow_dispatch:
-#  push:
-#    tags:
-#      - "v*"
+  push:
+    tags:
+      - "v*"
 
 jobs:
   publish:
@@ -29,6 +29,9 @@ jobs:
           registry-url: https://registry.npmjs.org/
           package-manager-cache: false
 
+      - name: Enable Corepack
+        run: corepack enable
+
       - name: Install deps
         run: pnpm install
 
@@ -37,6 +40,7 @@ jobs:
 
       - name: Publish package
         run: |
-          npm i -g npm@^11.5.2
+          npm i -g npm@^11.6.1
           cd dist 
-          pnpm publish ./lit-composition-0.0.1-alpha.tgz --tag release --access public
+          VERSION=$(node -e "console.log(require('$(pwd)/build/package.json').version)")
+          pnpm publish ./lit-composition-${VERSION}.tgz --tag latest --access public --no-git-checks
