@@ -17,7 +17,7 @@
     "url": "https://github.com/JorisAerts/lit-composition.git"
   },
   "private": true,
-  "version": "0.0.6",
+  "version": "0.0.7",
   "type": "module",
   "files": [
     "dist"
@@ -26,14 +26,14 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "prepublishOnly": "pnpm run dist",
-    "dist": "(pnpm test) && (node scripts/prepare-publish.js) && (pnpm vite build) && (cd dist/build && pnpm pack --pack-destination ..)",
+    "dist": "(node scripts/prepare-publish.js) && (cd dist/build && pnpm pack --pack-destination ..)",
     "lint": "eslint . --ext .ts,.tsx,.js,.jsx,.mjs,.cjs,.json,.yml",
     "format": "prettier --write .",
     "test": "pnpm test:unit --run && pnpm cy:run",
     "test:unit": "vitest",
     "cy:open": "cypress open",
-    "cy:run": "cypress run --component"
+    "cy:run": "cypress run --component",
+    "prepublish": "pnpm run dist"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",

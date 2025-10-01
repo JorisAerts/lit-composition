@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     tags:
-      - "v*"
+      - 'v*'
 
 jobs:
   publish:
@@ -35,12 +35,22 @@ jobs:
       - name: Install deps
         run: pnpm install
 
+      - name: Tests
+        run: pnpm test
+
       - name: Dist
         run: pnpm dist
 
-      - name: Publish package
+      - name: Publish package to npm
         run: |
           npm i -g npm@^11.6.1
-          cd dist 
-          VERSION=$(node -e "console.log(require('$(pwd)/build/package.json').version)")
-          pnpm publish ./lit-composition-${VERSION}.tgz --tag latest --access public --no-git-checks
+          cd dist
+          PACKAGE_NAME=$(node -e "console.log(require('$(pwd)/build/package.json').name)")
+          PACKAGE_VERSION=$(node -e "console.log(require('$(pwd)/build/package.json').version)")
+          PRERELEASE=$(node -e "
+              const v=[...('${PACKAGE_VERSION}'.matchAll(/[-.]([a-z]+)?[-.](\d+)?$/g))][0]; 
+              console.log(v?.[1] ?? '')
+          ")
+          TAG=${PRERELEASE:-latest}
+          echo "Publishing ${PACKAGE_NAME}@${PACKAGE_VERSION} with tag '${TAG}'"
+          pnpm publish ./${PACKAGE_NAME}-${PACKAGE_VERSION}.tgz --tag "${TAG}" --access public --no-git-checks
