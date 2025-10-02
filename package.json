@@ -50,7 +50,7 @@
     "globals": "^16.3.0",
     "lit": "^3.3.1",
     "prettier": "^3.6.2",
-    "typescript": "^5.9.2",
+    "typescript": "^5.9.3",
     "typescript-eslint": "^8.45.0",
     "unplugin-dts": "1.0.0-beta.6",
     "vite": "^7.1.7",
