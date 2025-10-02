@@ -23,7 +23,7 @@ export default defineConfig({
     excludeSpecPattern: ['**/node_modules/**', '**/dist/**', './e2e/*.cy.ts'],
     devServer: {
       bundler: 'vite',
-      framework: 'cypress-ct-lit' as any,
+      framework: 'cypress-ct-lit' as never,
       viteConfig: undefined,
     },
     indexHtmlFile: 'cypress/support/component-index.html',

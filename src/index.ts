@@ -3,6 +3,7 @@ export { mixin } from './utils'
 
 export * from './defineElement'
 
-export * from './utils/mixin'
-export * from './effect'
 export * from './hooks'
+export * from './reactivity'
+
+export * from './utils/mixin'
