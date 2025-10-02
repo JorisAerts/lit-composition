@@ -1,5 +1,5 @@
 import { html } from 'lit'
-import { computed, defineElement, onConnected, useRef, watchEffect } from '../src'
+import { computed, defineElement, onConnected, useRef, watchEffect } from '../../src'
 
 describe('useRef', () => {
   it('useRef should be reactive', () => {

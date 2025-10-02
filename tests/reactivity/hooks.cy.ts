@@ -10,7 +10,7 @@ import {
   onUpdated,
   onWillUpdate,
   useRef,
-} from '../src'
+} from '../../src'
 
 describe('test if onConnected is fired and able to change the element', () => {
   const addHooks = (hooks: string[], shouldUpdate = false) => {

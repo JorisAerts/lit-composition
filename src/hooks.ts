@@ -1,6 +1,6 @@
 import type { LitElement } from 'lit'
 import { type PropertyValues, type ReactiveElement } from 'lit'
-import { DEFINE_COMPONENT_OPTIONS } from './symbols'
+import { DEFINE_COMPONENT_OPTIONS_SYMBOL } from './symbols'
 import { dummyFn } from './utils'
 import { getCurrentOptions } from './currentInstance'
 
@@ -48,7 +48,7 @@ export const withHooks = <
 ): Result => {
   abstract class Mixin extends Base {
     /** @internal */
-    [DEFINE_COMPONENT_OPTIONS]: InternalOptions<this> = {
+    [DEFINE_COMPONENT_OPTIONS_SYMBOL]: InternalOptions<this> = {
       render: dummyFn,
       connectedCallback: fnSubscriber(),
       disconnectedCallback: fnSubscriber(),
@@ -61,7 +61,7 @@ export const withHooks = <
     }
 
     protected get __opts() {
-      return this[DEFINE_COMPONENT_OPTIONS]
+      return this[DEFINE_COMPONENT_OPTIONS_SYMBOL]
     }
 
     connectedCallback() {

@@ -1,2 +1,2 @@
-export * from './useRef'
+export * from './effect'
 export * from './reactive'

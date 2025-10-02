@@ -17,7 +17,8 @@
     "types": [
       "vitest",
       "node"
-    ]
+    ],
+    "rootDir": ".."
   },
   "exclude": [
     "./**/*.cy.ts"

@@ -1,9 +1,9 @@
 import type { LitElement } from 'lit'
-import { DEFINE_COMPONENT_OPTIONS } from './symbols'
+import { DEFINE_COMPONENT_OPTIONS_SYMBOL } from './symbols'
 import type { Fn } from './types'
 
 interface DefinedComponentInstance<Options = Record<string, unknown>> extends LitElement {
-  [DEFINE_COMPONENT_OPTIONS]: Options
+  [DEFINE_COMPONENT_OPTIONS_SYMBOL]: Options
 }
 
 let currentInstance: unknown = null
@@ -42,5 +42,5 @@ export const withCurrentInstance = <T extends LitElement, Result>(instance: T, c
 export const getCurrentOptions = <
   //
   Options extends {},
-  Element extends DefinedComponentInstance<Options> = LitElement & { [DEFINE_COMPONENT_OPTIONS]: Options },
->(): Options => getCurrentInstance<Element>()?.[DEFINE_COMPONENT_OPTIONS]
+  Element extends DefinedComponentInstance<Options> = LitElement & { [DEFINE_COMPONENT_OPTIONS_SYMBOL]: Options },
+>(): Options => getCurrentInstance<Element>()?.[DEFINE_COMPONENT_OPTIONS_SYMBOL]

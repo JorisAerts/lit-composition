@@ -2,8 +2,8 @@ import { html, LitElement } from 'lit'
 import { consume as $consume, createContext, provide as $provide } from '@lit/context'
 import { customElement } from 'lit/decorators.js'
 
-import { defineElement } from '../src'
-import { inject, provide } from '../src/context'
+import { defineElement } from '../../src'
+import { inject, provide } from '../../src/context'
 
 describe('context', () => {
   describe('provide', () => {

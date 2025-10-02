@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { isFunction } from '../src/utils/is'
+import { isFunction } from '../../src/utils/is'
 
 describe('isFunction', () => {
   it('match against a function', () => {
