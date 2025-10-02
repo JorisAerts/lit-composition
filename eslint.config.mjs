@@ -68,6 +68,8 @@ export default [
     },
     languageOptions: {
       parserOptions: {
+        allowDefaultProject: ['*.js'],
+        extraFileExtensions: ['.json'],
         projectService: true,
         tsconfigRootDir: import.meta.dirname,
         emitDecoratorMetadata: true,
