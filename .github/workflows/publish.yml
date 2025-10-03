@@ -38,6 +38,9 @@ jobs:
       - name: Tests
         run: pnpm test
 
+      - name: Build
+        run: pnpm vite build
+
       - name: Dist
         run: pnpm dist
 
