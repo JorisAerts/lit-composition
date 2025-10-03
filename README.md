@@ -79,21 +79,31 @@ defineElement('my-hello', () => html`Hello, World!`)
 ## No decorators required
 
 Classic Lit often uses decorators. With lit-composition you use plain options—no experimental TS flags.
+You also need to use accessors, which are also not part of the standard JavaScript specification.
 
 ```ts
-// Decorators (classic Lit)
+// Classic Lit: Decorators & non-standard accessors
 import {LitElement, html} from 'lit'
 import {customElement, property} from 'lit/decorators.js'
 
 @customElement('my-hello')
 class MyHello extends LitElement {
-    @property() who = 'World'
+    @property()
+    accessor who = 'World'
 
     render() {
         return html`Hello, ${this.who}`
     }
 }
 ```
+
+Using lit-composition, you can write the same component in plain, without decorators.
+
+If you choose to not write an explicit render function, lit-composition can also provide a dedicated setup-scope where
+you can access and manage the complete lifecycle of the
+component.
+
+The setup-function returns a render function:
 
 ```ts
 // lit-composition (no decorators)
@@ -103,8 +113,8 @@ import {html} from 'lit'
 defineElement({
     name: 'my-hello',
     props: {who: {type: String, default: 'World'}},
-    render() {
-        return html`Hello, ${this.who}`
+    setup() {
+        return () => html`Hello, ${this.who}`
     },
 })
 ```
@@ -117,7 +127,6 @@ Hooks map 1:1 to Lit lifecycle methods:
 - onDisconnected(cb) → disconnectedCallback
 - onWillUpdate(cb) → willUpdate
 - onPerformUpdate(cb) → performUpdate
-- onShouldUpdate(predicate) → shouldUpdate
 - onFirstUpdated(cb) → firstUpdated
 - onUpdated(cb) → updated
 - onUpdate(cb) → update
@@ -137,47 +146,6 @@ defineElement({
     },
 })
 ```
-
-## Shadow DOM control
-
-Use `shadowRoot: false` instead of overriding createRenderRoot:
-
-```ts
-import {defineElement} from 'lit-composition'
-import {html} from 'lit'
-
-defineElement({
-    name: 'light-dom',
-    shadowRoot: false,
-    render() {
-        return html`<slot></slot>`
-    },
-})
-```
-
-## Refs and computed
-
-Maintain small reactive bits of state that integrate with Lit updates without needing @state or @property. Use useRef()
-for a mutable reactive value and computed() for derived values.
-
-```ts
-import {defineElement, useRef, computed} from 'lit-composition'
-import {html} from 'lit'
-
-defineElement({
-    name: 'with-refs',
-    shadowRoot: false,
-    setup() {
-        const count = useRef(0)
-        const doubled = computed(() => count.value * 2)
-        return () => html`<button @click=${() => count.value++}>${count.value} → ${doubled.value}</button>`
-    },
-})
-```
-
-- useRef(initial) returns an object with a .value that triggers re-render on change.
-- computed(getter | {get, set}) creates a read-only or writable derived ref; it re-computes when any of its dependencies
-  change.
 
 ## Props and defaults
 
@@ -224,9 +192,86 @@ Precedence notes:
 - Attributes/props passed by the user win over defaults.
 - Values you set in setup() also win; defaults only fill undefined.
 
+## Shadow DOM control
+
+If you don't want to render the component in a shadow root, use `shadowRoot: false`. It's similar to overriding
+createRenderRoot in a classic Lit element:
+
+```ts
+import {defineElement} from 'lit-composition'
+import {html} from 'lit'
+
+defineElement({
+    name: 'light-dom',
+    shadowRoot: false,
+    render() {
+        return html`<slot></slot>`
+    },
+})
+```
+
+## Refs and computed
+
+Maintain small reactive bits of state that integrate with Lit updates without needing @state or @property. Use useRef()
+for a mutable reactive value and computed() for derived values.
+
+```ts
+import {defineElement, useRef, computed} from 'lit-composition'
+import {html} from 'lit'
+
+defineElement({
+    name: 'with-refs',
+    shadowRoot: false,
+    setup() {
+        const count = useRef(0)
+        const doubled = computed(() => count.value * 2)
+        return () => html`<button @click=${() => count.value++}>${count.value} → ${doubled.value}</button>`
+    },
+})
+```
+
+- useRef(initial) returns an object with a .value that triggers re-render on change.
+- computed(getter | {get, set}) creates a read-only or writable derived ref; it re-computes when any of its dependencies
+  change.
+
+You can also create refs outside a component and share them across multiple components.
+A ref is just a tiny reactive container; it is not tied to any specific element instance.
+Any component that reads a shared ref will update when that ref changes.
+
+```ts
+import {defineElement, useRef, computed} from 'lit-composition'
+import {html} from 'lit'
+
+// Module-scoped shared ref
+export const sharedCount = useRef(0)
+
+defineElement({
+    name: 'counter-a',
+    shadowRoot: false,
+    setup() {
+        const doubled = computed(() => sharedCount.value * 2)
+        return () => html`<button @click=${() => sharedCount.value++}>A: ${sharedCount.value} → ${doubled.value}</button>`
+    },
+})
+
+defineElement({
+    name: 'counter-b',
+    shadowRoot: false,
+    setup() {
+        return () => html`B sees: ${sharedCount.value}`
+    },
+})
+```
+
+Notes:
+
+- Defining a ref at module scope makes it a singleton shared by all importers of that module.
+- Each component still tracks its own dependencies; any component that reads sharedCount will re-render when it changes.
+
 ## Context: provide & inject (with @lit/context)
 
-lit-composition ships tiny helpers on top of @lit/context so you can share data across a component tree without decorators.
+lit-composition ships tiny helpers on top of @lit/context so you can share data across a component tree without
+decorators.
 They are fully interoperable with Lit’s own @provide and @consume decorators.
 
 Install note: @lit/context is an optional peer dependency; install it if you use these helpers (see Installation above).
@@ -240,25 +285,25 @@ import {createContext} from '@lit/context'
 import {provide, inject} from 'lit-composition/context'
 
 // 1) Create a context once (module scope)
-const userContext = createContext<{name: string}>(Symbol('user'))
+const userContext = createContext<{ name: string }>(Symbol('user'))
 
 // 2) Provide somewhere high in your tree
 defineElement({
-  name: 'user-provider',
-  setup() {
-    provide(userContext, {name: 'Ada'})
-    return () => html`<slot></slot>`
-  },
+    name: 'user-provider',
+    setup() {
+        provide(userContext, {name: 'Ada'})
+        return () => html`<slot></slot>`
+    },
 })
 
 // 3) Inject (consume) downstream
 defineElement({
-  name: 'user-greeting',
-  shadowRoot: false,
-  setup() {
-    const user = inject(userContext) // ContextConsumer with a reactive .value
-    return () => html`Hello, ${user.value.name}!`
-  },
+    name: 'user-greeting',
+    shadowRoot: false,
+    setup() {
+        const user = inject(userContext) // ContextConsumer with a reactive .value
+        return () => html`Hello, ${user.value.name}!`
+    },
 })
 ```
 
@@ -278,17 +323,20 @@ import {provide} from 'lit-composition/context'
 const ctx = createContext<string>(Symbol('demo'))
 
 defineElement({
-  name: 'demo-provide',
-  setup() {
-    provide(ctx, 'ok')
-    return () => html`<lit-consumer></lit-consumer>`
-  },
+    name: 'demo-provide',
+    setup() {
+        provide(ctx, 'ok')
+        return () => html`<lit-consumer></lit-consumer>`
+    },
 })
 
 @customElement('lit-consumer')
 class LitConsumer extends LitElement {
-  @consumeDec({context: ctx}) accessor value!: string
-  render() { return html`<div>${this.value}</div>` }
+    @consumeDec({context: ctx}) accessor value!: string
+
+    render() {
+        return html`<div>${this.value}</div>`
+    }
 }
 ```
 
@@ -305,25 +353,30 @@ const ctx = createContext<string>(Symbol('demo-2'))
 
 @customElement('lit-provider')
 class LitProvider extends LitElement {
-  @provideDec({context: ctx}) accessor provided = 'from lit'
-  render() { return html`<comp-consumer></comp-consumer>` }
+    @provideDec({context: ctx}) accessor provided = 'from lit'
+
+    render() {
+        return html`<comp-consumer></comp-consumer>`
+    }
 }
 
 defineElement({
-  name: 'comp-consumer',
-  shadowRoot: false,
-  setup() {
-    const v = inject(ctx)
-    return () => html`<div>${v.value}</div>`
-  },
+    name: 'comp-consumer',
+    shadowRoot: false,
+    setup() {
+        const v = inject(ctx)
+        return () => html`<div>${v.value}</div>`
+    },
 })
 ```
 
 Notes
 
 - provide(context, value) and inject(context) must be called during setup(), so there is a current component instance.
-- inject() returns a live ContextConsumer with a .value property and subscribes to updates; using .value in render will re-render when it changes.
-- These helpers just wrap @lit/context under the hood; anything that works with @provide/@consume also works across lit-composition components.
+- inject() returns a live ContextConsumer with a .value property and subscribes to updates; using .value in render will
+  re-render when it changes.
+- These helpers just wrap @lit/context under the hood; anything that works with @provide/@consume also works across
+  lit-composition components.
 
 ## Options reference
 
