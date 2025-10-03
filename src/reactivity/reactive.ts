@@ -13,9 +13,21 @@ type Reactive<T> = T extends object //
     }
   : T
 
+/**
+ * Check if a value is a reactive proxy created by reactive().
+ *
+ * @typeParam T - The target object type.
+ * @param target - The value to test.
+ * @returns True if the value is a reactive object produced by reactive().
+ */
 export const isReactive = <T extends {}>(target: T): target is Reactive<never> =>
   REACTIVE_OBJECT_SYMBOL in target && target[REACTIVE_OBJECT_SYMBOL] === REACTIVE_OBJECT_SYMBOL
 
+/**
+ * Turn an object containing Effects into a reactive object.
+ * @param target
+ * @param deep - if true, recursively make all properties reactive
+ */
 export const reactive = <T extends {}>(target: T, deep = true): Reactive<T> => {
   if (isReactive(target)) {
     return target
