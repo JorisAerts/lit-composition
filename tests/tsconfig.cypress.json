@@ -11,6 +11,7 @@
     "experimentalDecorators": false,
     "emitDecoratorMetadata": false,
     "useDefineForClassFields": false,
+    "rootDir": "..",
     "lib": [
       "ES2022",
       "DOM",

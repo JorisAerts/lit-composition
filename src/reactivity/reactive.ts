@@ -1,7 +1,7 @@
-import { REACTIVE_OBJECT_SYMBOL } from '../symbols.js'
-import type { Effect } from './effect.js'
-import { isRef } from './effect.js'
-import { isObject } from '../utils/is.js'
+import { REACTIVE_OBJECT_SYMBOL } from '../symbols'
+import type { Effect } from './effect'
+import { isRef } from './effect'
+import { isObject } from '../utils/is'
 
 type Reactive<T> = T extends object //
   ? {

@@ -1,6 +1,6 @@
-import { getCurrentInstance } from '../currentInstance.js'
-import { isFunction, isObject } from '../utils/is.js'
-import { REF_SYMBOL } from '../symbols.js'
+import { getCurrentInstance } from '../currentInstance'
+import { isFunction, isObject } from '../utils/is'
+import { REF_SYMBOL } from '../symbols'
 import type { ReactiveElement } from 'lit'
 
 const VALUE = 'value'
