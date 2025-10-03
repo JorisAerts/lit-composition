@@ -41,6 +41,8 @@ const writePackageJson = async () => {
     },
   }
 
+  packageJson.sideEffects = false
+
   const publishedPackageJson = resolve(buildDir, 'package.json')
   await writeFile(publishedPackageJson, JSON.stringify(packageJson, null, 2))
 }

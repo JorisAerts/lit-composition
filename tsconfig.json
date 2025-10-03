@@ -1,6 +1,8 @@
 {
   "extends": "@tsconfig/node24/tsconfig.json",
   "compilerOptions": {
+    "stripInternal": true,
+    "moduleResolution": "bundler",
     "outDir": "node_modules/.cache/lit-composition"
   },
   "references": [

@@ -24,6 +24,20 @@ It requires no decorators and allows developers to write approved standardized J
 - Shadow DOM control via shadowRoot: false
 - Real LitElement subclass under the hood
 
+## Table of contents
+
+- Installation
+- Setup
+- Quick start
+- Usage
+- No decorators required
+- Lifecycle hooks
+- Props and defaults
+- Shadow DOM control
+- Refs and computed
+- Context: provide & inject
+- Options reference
+
 ## Installation
 
 Peer requirements: lit >=3 (required), @lit/context >=1 (optional, only if you use context helpers).
@@ -45,6 +59,29 @@ npm i @lit/context
 # or
 yarn add @lit/context
 ```
+
+## Setup
+
+- TypeScript: No experimental decorators required. Recommended tsconfig: target ES2020+ (or latest your environment
+  supports), module ES2020/ESNext, libs include DOM and ES2020. You do NOT need experimentalDecorators or
+  emitDecoratorMetadata.
+- Bundlers: Package is pure ESM with standard exports. Works out-of-the-box with Vite, Rollup, and Webpack 5+. No
+  special plugins or config needed.
+- Import paths: Most APIs come from 'lit-composition'. Context helpers live under the subpath '
+  lit-composition/context' (see examples below).
+- Peer deps: Install lit@^3. If you use context helpers, also install @lit/context.
+- Runtime support: Modern evergreen browsers (Chromium, Firefox, Safari). For tooling scripts (not the browser), Node
+  18+ is recommended.
+- CDN (quick try):
+  ```html
+  <script type="module">
+    import {defineElement} from 'https://unpkg.com/lit-composition/dist/index.js'
+    import {html} from 'https://unpkg.com/lit@3/index.js'
+
+    defineElement('hello-cdn', () => html`Hello from CDN`)
+  </script>
+  <hello-cdn></hello-cdn>
+  ```
 
 ## Quick start
 
@@ -75,6 +112,15 @@ import {html} from 'lit'
 
 defineElement('my-hello', () => html`Hello, World!`)
 ```
+
+## Usage
+
+- defineElement(options) — object form. You can declare props, styles, and optionally a setup() that returns a render
+  function. Prefer this when you need lifecycle hooks or state.
+- defineElement(name, render) — shorthand functional form. Quick for simple stateless components.
+- Context helpers are imported from 'lit-composition/context' (subpath export).
+
+Examples for each concept are provided in the sections below.
 
 ## No decorators required
 
