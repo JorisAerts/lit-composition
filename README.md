@@ -1,5 +1,7 @@
 # lit-composition
 
+[![npm](https://img.shields.io/npm/v/lit-composition/latest)](https://img.shields.io/npm/v/lit-composition/latest)
+
 <div class="icon" style="font-size: 1600%; margin:-.25em 0;">📦</div>
 
 
