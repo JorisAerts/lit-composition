@@ -5,9 +5,9 @@ import type { Class, ValidCustomElementName } from './types'
 import { isFunction, isString, isUndefined } from './utils/is'
 import { withCurrentInstance } from './currentInstance'
 import { withHooks } from './hooks'
-import { defineCustomElement } from './browser'
+import { registerCustomElement } from './browser'
 
-type ExtractProperties<Props extends Record<string, PropertyDeclaration>> = {
+export type ExtractProperties<Props extends Record<string, PropertyDeclaration>> = {
   [K in keyof Props]: Props[K] extends PropertyDeclaration
     ? Props[K]['type'] extends Class<infer Type>
       ? Type
@@ -79,7 +79,7 @@ const defineElementWithOptions = <
 
   // register the component
   if (register != false && name) {
-    defineCustomElement(name, result)
+    registerCustomElement(name, result)
   }
   return result as unknown as typeof LitElement
 }

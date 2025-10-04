@@ -24,7 +24,8 @@
     ]
   },
   "exclude": [
-    "./**/*.spec.ts"
+    "./**/*.spec.ts",
+    "./**/*.spec-d.ts"
   ],
   "include": [
     "../cypress/cypress.d.ts",
