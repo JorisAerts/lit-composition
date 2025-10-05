@@ -1,7 +1,9 @@
 # lit-composition
 
+[![license](https://img.shields.io/github/license/JorisAerts/lit-composition)](https://github.com/JorisAerts/lit-composition?tab=MIT-1-ov-file)
 [![test](https://github.com/JorisAerts/lit-composition/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/JorisAerts/lit-composition/actions/workflows/test.yml)
 [![npm](https://img.shields.io/npm/v/lit-composition/latest?logo=npm)](https://www.npmjs.com/package/lit-composition)
+[![size](https://img.shields.io/bundlephobia/minzip/lit-composition?label=size)](https://www.npmjs.com/package/lit-composition)
 
 <div class="icon" style="font-size: 1600%; margin:-.25em 0;">📦</div>
 
