@@ -1,4 +1,5 @@
 import { expectTypeOf, it } from 'vitest'
+import type { PropType } from '../src'
 import { defineElement } from '../src'
 import { html } from 'lit'
 
@@ -16,7 +17,7 @@ it('defineElement arguments', () => {
   })
 })
 
-it('defineElement inferred arguments', () => {
+it('defineElement inferred arguments in setup function', () => {
   defineElement({
     name: 'tag-name',
     register: false,
@@ -24,6 +25,8 @@ it('defineElement inferred arguments', () => {
       txt: { type: String },
       num: { type: Number },
       dat: { type: Date },
+
+      special: { type: String as PropType<`ok${string}ok`> },
     },
 
     setup() {
@@ -31,7 +34,35 @@ it('defineElement inferred arguments', () => {
       expectTypeOf(this.num).toEqualTypeOf<number>()
       expectTypeOf(this.dat).toEqualTypeOf<Date>()
 
+      expectTypeOf(this.special).not.toEqualTypeOf<string>()
+      expectTypeOf(this.special).toEqualTypeOf<`ok${string}ok`>()
+
       return () => html``
+    },
+  })
+})
+
+it('defineElement inferred arguments in render function', () => {
+  defineElement({
+    name: 'tag-name',
+    register: false,
+    props: {
+      txt: { type: String },
+      num: { type: Number },
+      dat: { type: Date },
+
+      special: { type: String as PropType<`ok${string}ok`> },
+    },
+
+    render() {
+      expectTypeOf(this.txt).toEqualTypeOf<string>()
+      expectTypeOf(this.num).toEqualTypeOf<number>()
+      expectTypeOf(this.dat).toEqualTypeOf<Date>()
+
+      expectTypeOf(this.special).not.toEqualTypeOf<string>()
+      expectTypeOf(this.special).toEqualTypeOf<`ok${string}ok`>()
+
+      return html``
     },
   })
 })

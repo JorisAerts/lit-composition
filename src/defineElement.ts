@@ -7,7 +7,7 @@ import { withCurrentInstance } from './currentInstance'
 import { withHooks } from './hooks'
 import { registerCustomElement } from './browser'
 
-export type ExtractProperties<Props extends Record<string, DefinePropertyDeclaration>> = {
+export type UnwrapProps<Props extends Record<string, DefinePropertyDeclaration>> = {
   [K in keyof Props]: InferPropType<Props[K]>
 }
 
@@ -68,7 +68,7 @@ const defineElementWithOptions = <
   Properties extends Record<string, DefinePropertyDeclaration>,
   Styles extends CSSResultGroup,
   Parent extends typeof LitElement,
-  Instance extends InstanceType<Parent> & ExtractProperties<Properties>,
+  Instance extends InstanceType<Parent> & UnwrapProps<Properties>,
   Render extends (this: Instance) => unknown,
   Setup extends (this: Instance, comp?: Instance) => void | Render,
 >(options: {
@@ -130,7 +130,7 @@ export function defineElement<
   Properties extends Record<string, DefinePropertyDeclaration>,
   Styles extends CSSResultGroup,
   Parent extends typeof LitElement,
-  Instance extends InstanceType<Parent> & ExtractProperties<Properties>,
+  Instance extends InstanceType<Parent> & UnwrapProps<Properties>,
   Render extends (this: Instance) => unknown,
   Setup extends (this: Instance, comp?: Instance) => void | Render,
 >(options: {
