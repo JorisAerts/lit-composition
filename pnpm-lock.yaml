@@ -68,6 +68,9 @@ importers:
 
   site:
     dependencies:
+      '@lit-labs/router':
+        specifier: ^0.1.4
+        version: 0.1.4
       lit:
         specifier: ^3.3.1
         version: 3.3.1
@@ -327,6 +330,9 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
+
+  '@lit-labs/router@0.1.4':
+    resolution: {integrity: sha512-xURH6fOPE0MYfXa1nyl+qTIhZRVWkFa2oggTRodKAI2q/HjA2Va7HEKe7fMm8DdnFE+zEI2aUGnStawKpVh3lQ==}
 
   '@lit-labs/ssr-dom-shim@1.4.0':
     resolution: {integrity: sha512-ficsEARKnmmW5njugNYKipTm4SFnbik7CXtoencDZzmzo/dQ+2Q0bgkzJuoJP20Aj0F+izzJjOqsnkd6F/o1bw==}
@@ -2285,6 +2291,10 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
+
+  '@lit-labs/router@0.1.4':
+    dependencies:
+      lit: 3.3.1
 
   '@lit-labs/ssr-dom-shim@1.4.0': {}
 
