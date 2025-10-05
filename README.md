@@ -261,13 +261,15 @@ defineElement({
 })
 ```
 
-## Refs and computed
+## Refs, computed, and watchEffect
 
-Maintain small reactive bits of state that integrate with Lit updates without needing @state or @property. Use useRef()
-for a mutable reactive value and computed() for derived values.
+Maintain small reactive bits of state that integrate with Lit updates without needing @state or @property. Use
+`useRef()`
+for a mutable reactive value, `computed()` for derived values, and `watchEffect()` for running side effects in response
+to reactive state changes.
 
 ```ts
-import {defineElement, useRef, computed} from 'lit-composition'
+import {defineElement, useRef, computed, watchEffect} from 'lit-composition'
 import {html} from 'lit'
 
 defineElement({
@@ -276,14 +278,22 @@ defineElement({
     setup() {
         const count = useRef(0)
         const doubled = computed(() => count.value * 2)
+
+        // Run a side effect whenever count or doubled changes
+        watchEffect(() => {
+            console.log(`Count is ${count.value}, doubled is ${doubled.value}`)
+        })
+
         return () => html`<button @click=${() => count.value++}>${count.value} → ${doubled.value}</button>`
     },
 })
 ```
 
-- useRef(initial) returns an object with a .value that triggers re-render on change.
-- computed(getter | {get, set}) creates a read-only or writable derived ref; it re-computes when any of its dependencies
-  change.
+- `useRef(initial)` returns an object with a `.value` that triggers re-render on change.
+- `computed(getter | {get, set})` creates a read-only or writable derived ref; it re-computes when any of its
+  dependencies change.
+- `watchEffect(fn)` runs the given function immediately and re-runs it whenever any of its reactive dependencies change.
+  Returns a stop function (currently a no-op).
 
 You can also create refs outside a component and share them across multiple components.
 A ref is just a tiny reactive container; it is not tied to any specific element instance.
