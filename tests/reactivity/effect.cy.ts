@@ -252,7 +252,7 @@ describe('watchEffect', () => {
     })
   })
 
-  it.skip('watchEffect reactivity through computed chains', () => {
+  it('watchEffect reactivity through computed chains', () => {
     const seen: number[] = []
 
     defineElement({
