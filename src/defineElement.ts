@@ -1,22 +1,56 @@
 import type { CSSResultGroup, PropertyDeclaration } from 'lit'
 import { LitElement } from 'lit'
 import { dummyFn } from './utils'
-import type { Class, ValidCustomElementName } from './types'
+import type { ValidCustomElementName } from './types'
 import { isFunction, isString, isUndefined } from './utils/is'
 import { withCurrentInstance } from './currentInstance'
 import { withHooks } from './hooks'
 import { registerCustomElement } from './browser'
 
-export type ExtractProperties<Props extends Record<string, PropertyDeclaration>> = {
-  [K in keyof Props]: Props[K] extends PropertyDeclaration
-    ? Props[K]['type'] extends Class<infer Type>
-      ? Type
-      : Props[K]['type']
-    : never
+export type ExtractProperties<Props extends Record<string, DefinePropertyDeclaration>> = {
+  [K in keyof Props]: InferPropType<Props[K]>
 }
 
-interface DefinePropertyDeclaration<T = unknown> extends PropertyDeclaration {
-  default?: T | (() => T)
+type TypeConstructor<T = unknown> = (new (...args: unknown[]) => T & {}) | (() => T) | TypeMethod<T>
+type TypeMethod<T, Ctor = unknown> = [T] extends [((...args: unknown[]) => unknown) | undefined]
+  ? { new (): Ctor; (): T; readonly prototype: Ctor }
+  : never
+
+type InferPropType<T, NullAsAny = true> = [T] extends [null]
+  ? NullAsAny extends true
+    ? unknown
+    : null
+  : [T] extends [{ type: null | true }]
+    ? unknown
+    : [T] extends [DefinePropertyDeclaration<unknown, ObjectConstructor>]
+      ? Record<string, unknown>
+      : [T] extends [BooleanConstructor | DefinePropertyDeclaration<unknown, BooleanConstructor>]
+        ? boolean
+        : [T] extends [DateConstructor | DefinePropertyDeclaration<unknown, DateConstructor>]
+          ? Date
+          : [T] extends [(infer U)[] | DefinePropertyDeclaration<unknown, (infer U)[]>]
+            ? U extends DateConstructor
+              ? Date | InferPropType<U, false>
+              : InferPropType<U, false>
+            : [T] extends [DefinePropertyDeclaration<unknown, infer V>]
+              ? V extends StringConstructor
+                ? string
+                : V extends NumberConstructor
+                  ? number
+                  : V extends BooleanConstructor
+                    ? boolean
+                    : V extends DateConstructor
+                      ? Date
+                      : V extends PropType<infer P>
+                        ? P
+                        : V
+              : T
+
+export type PropType<T> = TypeConstructor<T> | (TypeConstructor<T> | null)[]
+
+interface DefinePropertyDeclaration<Type = unknown, TypeHint = unknown> extends PropertyDeclaration<Type, TypeHint> {
+  readonly type?: TypeHint
+  readonly default?: TypeHint | (() => TypeHint)
 }
 
 const assignDefaultValues = <T extends HTMLElement>(obj: T, props?: Record<string, DefinePropertyDeclaration>) =>
@@ -39,7 +73,7 @@ const defineElementWithOptions = <
   Setup extends (this: Instance, comp?: Instance) => void | Render,
 >(options: {
   name?: Name
-  parent?: typeof LitElement
+  parent?: Parent
   styles?: Styles
   props?: Properties
 
@@ -91,9 +125,39 @@ const defineFunctionalComponent = (name: ValidCustomElementName, render: () => u
   defineElementWithOptions({ name, render, shadowRoot: false })
 
 export function defineElement(name: ValidCustomElementName, render: () => unknown): typeof LitElement
-export function defineElement(options: Parameters<typeof defineElementWithOptions>[0]): typeof LitElement
+export function defineElement<
+  Name extends ValidCustomElementName,
+  Properties extends Record<string, DefinePropertyDeclaration>,
+  Styles extends CSSResultGroup,
+  Parent extends typeof LitElement,
+  Instance extends InstanceType<Parent> & ExtractProperties<Properties>,
+  Render extends (this: Instance) => unknown,
+  Setup extends (this: Instance, comp?: Instance) => void | Render,
+>(options: {
+  name?: Name
+  parent?: Parent
+  styles?: Styles
+  props?: Properties
+  register?: boolean
+  shadowRoot?: boolean
+  setup?: Setup
+  render?: Render
+}): typeof LitElement
 export function defineElement(
-  ...args: [ValidCustomElementName, () => unknown] | [Parameters<typeof defineElementWithOptions>[0]]
+  ...args:
+    | [ValidCustomElementName, () => unknown]
+    | [
+        {
+          name?: ValidCustomElementName
+          parent?: typeof LitElement
+          styles?: CSSResultGroup
+          props?: Record<string, DefinePropertyDeclaration>
+          register?: boolean
+          shadowRoot?: boolean
+          setup?: (this: unknown, comp?: unknown) => void | ((this: unknown) => unknown)
+          render?: (this: unknown) => unknown
+        },
+      ]
 ) {
   return isString(args[0])
     ? defineFunctionalComponent(args[0], args[1] as () => unknown)

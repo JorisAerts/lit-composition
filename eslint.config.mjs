@@ -54,7 +54,13 @@ export default [
     rules: {
       '@typescript-eslint/no-misused-promises': ['off'],
       '@typescript-eslint/no-empty-object-type': ['off'],
-      '@typescript-eslint/no-explicit-any': ['warn'],
+      '@typescript-eslint/no-explicit-any': [
+        'warn',
+        {
+          fixToUnknown: true,
+          ignoreRestArgs: true,
+        },
+      ],
       '@typescript-eslint/no-floating-promises': ['warn', { ignoreVoid: true }],
       '@typescript-eslint/no-unsafe-assignment': ['warn'],
       '@typescript-eslint/consistent-type-imports': [
