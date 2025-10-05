@@ -7,9 +7,11 @@ type Reactive<T> = T extends object //
   ? {
       [K in keyof T]: T[K] extends Effect<infer V> //
         ? V
-        : T[K] extends object
-          ? Reactive<T[K]>
-          : T[K]
+        : T[K] extends (...args: any[]) => unknown
+          ? T[K]
+          : T[K] extends object
+            ? Reactive<T[K]>
+            : T[K]
     }
   : T
 
@@ -60,8 +62,7 @@ export const reactive = <T extends {}>(target: T, deep = true): Reactive<T> => {
         delete props.value
 
         result[key] = {
-          ...props,
-          configurable: false,
+          enumerable: props.enumerable ?? true,
           get,
           set: isWritable ? set : undefined,
         }

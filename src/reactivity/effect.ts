@@ -155,6 +155,7 @@ export function computed<T>(
 
   let dirty = true
   let cached: T
+  let initialized = false
 
   const target = createEffect<T | undefined>(undefined)
   const subscribers = new Set<ReactiveElement>()
@@ -173,15 +174,26 @@ export function computed<T>(
     }
   }
 
-  // Track dependencies of getter via effect
+  // Track dependencies of getter via effect; recompute and only notify on change
   watchEffect(() => {
-    // When dependencies change, mark as dirty
-    // We read them within an effect to register the dep graph.
-    getFn()
-    dirty = true
-    // Notify readers (both effects and components) that value became stale/changed
-    notifySubscribers()
-    trigger(target, VALUE)
+    const next = getFn()
+    if (!initialized) {
+      // first compute: establish cache without notifying dependents
+      cached = next as T
+      initialized = true
+      dirty = false
+      return
+    }
+    const old = cached
+    if (!Object.is(old, next)) {
+      cached = next as T
+      dirty = false
+      // Only notify when the computed value actually changed
+      notifySubscribers(old)
+      trigger(target, VALUE)
+    } else {
+      dirty = false
+    }
   })
 
   const obj = {} as ComputedRef<T>
@@ -199,10 +211,7 @@ export function computed<T>(
     set: (v: T) => {
       if (!setFn) return
       setFn(v)
-      // After a write through setter, mark as dirty and schedule recompute on next get
-      dirty = true
-      notifySubscribers()
-      trigger(target, VALUE)
+      // Recompute and notifications are handled by the dependency effect.
     },
   })
   return obj

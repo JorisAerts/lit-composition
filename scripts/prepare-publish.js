@@ -18,7 +18,6 @@ const createDistFolder = async () => {
 
 const writePackageJson = async () => {
   const packageJsonSource = resolve(__dirname, '../', 'package.json')
-  console.log(packageJsonSource)
   const jsonRaw = await readFile(packageJsonSource)
   const packageJson = JSON.parse(jsonRaw)
 
