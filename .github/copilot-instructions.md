@@ -1,7 +1,24 @@
+# Copilot Instructions + Contributor Guide for lit-composition
+
+This document gives AI coding assistants (Copilot/ChatGPT) and human contributors the finest context to work effectively
+on lit-composition. It describes the architecture, APIs, preferred patterns, do/don't rules, and copy‑pasteable
+examples.
+Treat
+this as the source of truth when generating code.
+
+## 1) What is lit-composition?
+
+  mixin support.
+
+## 2) Mental model
+
+  element when a name is provided.
+    - render(): a standard Lit render function, or
+    - setup(): a function that may return a render function and is the place to wire hooks, side effects, and defaults.
 
 # Copilot Instructions for lit-composition
 
->This guide enables AI coding agents to be productive in the lit-composition codebase. It merges prior instructions with updated, actionable, codebase-specific guidance.
+This guide enables AI coding agents to be productive in the lit-composition codebase. It merges prior instructions with updated, actionable, codebase-specific guidance.
 
 ## Architecture & Key Concepts
 - **Core API:** Components are defined via `defineElement(options)` (see `src/defineElement.ts`). This returns a LitElement subclass and optionally registers it as a custom element.
@@ -62,24 +79,6 @@ const MyHello = defineElement({
 
 ---
 If any section is unclear or incomplete, please provide feedback or open an issue/PR to improve these instructions.
-
-## 1) What is lit-composition?
-
-- lit-composition provides TypeScript-first helpers for building Lit web components.
-- Focus: strong typing, ergonomic component definition, composable lifecycle hooks, optional shadow DOM, and simple
-  mixin support.
-- Core entry points: `src/index.ts`, `src/defineElement.ts`, `src/hooks/`, `src/context/`, `src/utils/`.
-
-## 2) Mental model
-
-- You define components via defineElement(options). It returns a LitElement subclass and can register it as a custom
-  element when a name is provided.
-- You can supply either:
-    - render(): a standard Lit render function, or
-    - setup(): a function that may return a render function and is the place to wire hooks, side effects, and defaults.
-- Lifecycle hooks are added via onConnected, onUpdated, etc. They are composable and may be called inside setup.
-
-## 3) defineElement API (from src/defineElement.ts)
 
 Signature (simplified):
 
