@@ -5,9 +5,11 @@ import packageJson from './package.json' with { type: 'json' }
 
 const externalPackages = [
   /^@lit\//,
+  /^lit\/?.*/,
   ...(['dependencies', 'devDependencies', 'peerDependencies'] as (keyof typeof packageJson)[])
     .map((dep) => packageJson[dep] ?? {})
-    .flatMap(Object.keys),
+    .flatMap(Object.keys)
+    .map((dep) => new RegExp(`^${dep}\\/?.*`)),
 ]
 
 export default defineConfig({
