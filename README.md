@@ -261,15 +261,14 @@ defineElement({
 })
 ```
 
-## Refs, computed, and watchEffect
+
+## Refs and computed
 
 Maintain small reactive bits of state that integrate with Lit updates without needing @state or @property. Use
-`useRef()`
-for a mutable reactive value, `computed()` for derived values, and `watchEffect()` for running side effects in response
-to reactive state changes.
+`useRef()` for a mutable reactive value and `computed()` for derived values.
 
 ```ts
-import {defineElement, useRef, computed, watchEffect} from 'lit-composition'
+import {defineElement, useRef, computed} from 'lit-composition'
 import {html} from 'lit'
 
 defineElement({
@@ -278,26 +277,15 @@ defineElement({
     setup() {
         const count = useRef(0)
         const doubled = computed(() => count.value * 2)
-
-        // Run a side effect whenever count or doubled changes
-        watchEffect(() => {
-            console.log(`Count is ${count.value}, doubled is ${doubled.value}`)
-        })
-
         return () => html`<button @click=${() => count.value++}>${count.value} → ${doubled.value}</button>`
     },
 })
 ```
 
 - `useRef(initial)` returns an object with a `.value` that triggers re-render on change.
-- `computed(getter | {get, set})` creates a read-only or writable derived ref; it re-computes when any of its
-  dependencies change.
-- `watchEffect(fn)` runs the given function immediately and re-runs it whenever any of its reactive dependencies change.
-  Returns a stop function (currently a no-op).
+- `computed(getter | {get, set})` creates a read-only or writable derived ref; it re-computes when any of its dependencies change.
 
-You can also create refs outside a component and share them across multiple components.
-A ref is just a tiny reactive container; it is not tied to any specific element instance.
-Any component that reads a shared ref will update when that ref changes.
+You can also create refs outside a component and share them across multiple components. A ref is just a tiny reactive container; it is not tied to any specific element instance. Any component that reads a shared ref will update when that ref changes.
 
 ```ts
 import {defineElement, useRef, computed} from 'lit-composition'
@@ -324,10 +312,84 @@ defineElement({
 })
 ```
 
-Notes:
+## Watching reactive state with `watch`
 
-- Defining a ref at module scope makes it a singleton shared by all importers of that module.
-- Each component still tracks its own dependencies; any component that reads sharedCount will re-render when it changes.
+The `watch` function lets you run a callback when one or more refs or computed values change, similar to Vue's `watch`. It is useful for responding to changes in state, performing side effects, or synchronizing with external systems.
+
+**Usage:**
+
+- `watch(refOrGetter, (newVal, oldVal) => { ... })`
+- `watch([ref1, getter2], ([new1, new2], [old1, old2]) => { ... })`
+
+The callback receives the new and previous value(s). The watcher runs only when the value(s) change. By default, the callback is not called immediately on setup, but you can pass `{ immediate: true }` as a third argument to run it once with the current value(s).
+
+**Examples:**
+
+```ts
+import {defineElement, useRef, watch} from 'lit-composition'
+import {html} from 'lit'
+
+defineElement({
+    name: 'my-watcher',
+    setup() {
+        const count = useRef(0)
+        const label = useRef('')
+
+        // Watch a single ref
+        watch(count, (newVal, oldVal) => {
+            console.log('Count changed from', oldVal, 'to', newVal)
+        })
+
+        // Watch multiple sources
+        watch([count, label], ([newCount, newLabel], [oldCount, oldLabel]) => {
+            console.log('Count or label changed:', { newCount, newLabel, oldCount, oldLabel })
+        })
+
+        // Watch with immediate option
+        watch(count, (newVal) => {
+            console.log('Immediate count:', newVal)
+        }, { immediate: true })
+
+        return () => html`
+            <button @click=${() => count.value++}>Inc: ${count.value}</button>
+            <input .value=${label.value} @input=${e => label.value = e.target.value} />
+        `
+    },
+})
+```
+
+**Notes:**
+
+- You can watch refs, computed values, or getter functions.
+- The stop function returned by `watch` can be called to stop watching.
+
+## Side effects with `watchEffect`
+
+The `watchEffect` function runs a function immediately and re-runs it whenever any of its reactive dependencies change. This is useful for simple reactive side effects that do not need access to previous values.
+
+**Example:**
+
+```ts
+import {defineElement, useRef, computed, watchEffect} from 'lit-composition'
+import {html} from 'lit'
+
+defineElement({
+    name: 'with-effect',
+    shadowRoot: false,
+    setup() {
+        const count = useRef(0)
+        const doubled = computed(() => count.value * 2)
+
+        watchEffect(() => {
+            console.log(`Count is ${count.value}, doubled is ${doubled.value}`)
+        })
+
+        return () => html`<button @click=${() => count.value++}>${count.value} → ${doubled.value}</button>`
+    },
+})
+```
+
+- `watchEffect(fn)` runs the given function immediately and re-runs it whenever any of its reactive dependencies change. Returns a stop function (currently a no-op).
 
 ## Context: provide & inject (with @lit/context)
 
