@@ -1,12 +1,11 @@
 # lit-composition
 
-[![license](https://img.shields.io/github/license/JorisAerts/lit-composition)](https://github.com/JorisAerts/lit-composition?tab=MIT-1-ov-file)
 [![test](https://github.com/JorisAerts/lit-composition/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/JorisAerts/lit-composition/actions/workflows/test.yml)
-[![npm](https://img.shields.io/npm/v/lit-composition/latest?logo=npm)](https://www.npmjs.com/package/lit-composition)
-[![size](https://img.shields.io/bundlephobia/minzip/lit-composition?label=size)](https://www.npmjs.com/package/lit-composition)
+[![npm](https://img.shields.io/npm/v/lit-composition/latest?logo=npm&label=NPM)](https://www.npmjs.com/package/lit-composition)
+[![size](https://img.shields.io/bundlephobia/minzip/lit-composition?label=Size)](https://www.npmjs.com/package/lit-composition)
+[![license](https://img.shields.io/github/license/JorisAerts/lit-composition?label=License)](https://github.com/JorisAerts/lit-composition?tab=MIT-1-ov-file)
 
-<div class="icon" style="font-size: 1600%; margin:-.25em 0;">📦</div>
-
+<h1 class="icon" style="font-size: 1600%; margin:-.25em 0; padding: 2rem">📦</h1>
 
 A tiny toolkit for building Lit Web Components with less boilerplate.
 It requires no decorators and allows developers to write approved standardized JavaScript / TypeScript.
@@ -261,7 +260,6 @@ defineElement({
 })
 ```
 
-
 ## Refs and computed
 
 Maintain small reactive bits of state that integrate with Lit updates without needing @state or @property. Use
@@ -283,9 +281,12 @@ defineElement({
 ```
 
 - `useRef(initial)` returns an object with a `.value` that triggers re-render on change.
-- `computed(getter | {get, set})` creates a read-only or writable derived ref; it re-computes when any of its dependencies change.
+- `computed(getter | {get, set})` creates a read-only or writable derived ref; it re-computes when any of its
+  dependencies change.
 
-You can also create refs outside a component and share them across multiple components. A ref is just a tiny reactive container; it is not tied to any specific element instance. Any component that reads a shared ref will update when that ref changes.
+You can also create refs outside a component and share them across multiple components. A ref is just a tiny reactive
+container; it is not tied to any specific element instance. Any component that reads a shared ref will update when that
+ref changes.
 
 ```ts
 import {defineElement, useRef, computed} from 'lit-composition'
@@ -314,14 +315,17 @@ defineElement({
 
 ## Watching reactive state with `watch`
 
-The `watch` function lets you run a callback when one or more refs or computed values change, similar to Vue's `watch`. It is useful for responding to changes in state, performing side effects, or synchronizing with external systems.
+The `watch` function lets you run a callback when one or more refs or computed values change, similar to Vue's `watch`.
+It is useful for responding to changes in state, performing side effects, or synchronizing with external systems.
 
 **Usage:**
 
 - `watch(refOrGetter, (newVal, oldVal) => { ... })`
 - `watch([ref1, getter2], ([new1, new2], [old1, old2]) => { ... })`
 
-The callback receives the new and previous value(s). The watcher runs only when the value(s) change. By default, the callback is not called immediately on setup, but you can pass `{ immediate: true }` as a third argument to run it once with the current value(s).
+The callback receives the new and previous value(s). The watcher runs only when the value(s) change. By default, the
+callback is not called immediately on setup, but you can pass `{ immediate: true }` as a third argument to run it once
+with the current value(s).
 
 **Examples:**
 
@@ -342,13 +346,13 @@ defineElement({
 
         // Watch multiple sources
         watch([count, label], ([newCount, newLabel], [oldCount, oldLabel]) => {
-            console.log('Count or label changed:', { newCount, newLabel, oldCount, oldLabel })
+            console.log('Count or label changed:', {newCount, newLabel, oldCount, oldLabel})
         })
 
         // Watch with immediate option
         watch(count, (newVal) => {
             console.log('Immediate count:', newVal)
-        }, { immediate: true })
+        }, {immediate: true})
 
         return () => html`
             <button @click=${() => count.value++}>Inc: ${count.value}</button>
@@ -365,7 +369,8 @@ defineElement({
 
 ## Side effects with `watchEffect`
 
-The `watchEffect` function runs a function immediately and re-runs it whenever any of its reactive dependencies change. This is useful for simple reactive side effects that do not need access to previous values.
+The `watchEffect` function runs a function immediately and re-runs it whenever any of its reactive dependencies change.
+This is useful for simple reactive side effects that do not need access to previous values.
 
 **Example:**
 
@@ -389,7 +394,8 @@ defineElement({
 })
 ```
 
-- `watchEffect(fn)` runs the given function immediately and re-runs it whenever any of its reactive dependencies change. Returns a stop function (currently a no-op).
+- `watchEffect(fn)` runs the given function immediately and re-runs it whenever any of its reactive dependencies change.
+  Returns a stop function (currently a no-op).
 
 ## Context: provide & inject (with @lit/context)
 

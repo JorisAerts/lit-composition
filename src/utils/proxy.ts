@@ -1,6 +1,6 @@
 import { property } from 'lit/decorators.js'
 import type { PropertyDeclaration } from 'lit'
-import { NotAllowedException } from '../exception'
+import { NotAllowedException } from './exception'
 
 const PROXY_SYMBOL = Symbol('proxy')
 type Proxy<T> = T & { [PROXY_SYMBOL]: T }

@@ -1,11 +1,11 @@
 import type { CSSResultGroup, PropertyDeclaration } from 'lit'
 import { LitElement } from 'lit'
-import { dummyFn } from './utils'
-import type { ValidCustomElementName } from './types'
-import { isFunction, isString, isUndefined } from './utils/is'
-import { withCurrentInstance } from './currentInstance'
+import { dummyFn } from '../utils'
+import type { ValidCustomElementName } from '../utils/types'
+import { isFunction, isString, isUndefined } from '../utils/is'
+import { withCurrentInstance } from '../currentInstance'
 import { withHooks } from './hooks'
-import { registerCustomElement } from './browser'
+import { registerCustomElement } from '../utils/browser'
 
 export type UnwrapProps<Props extends Record<string, DefinePropertyDeclaration>> = {
   [K in keyof Props]: InferPropType<Props[K]>

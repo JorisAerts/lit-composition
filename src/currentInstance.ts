@@ -1,6 +1,6 @@
 import type { LitElement } from 'lit'
 import { DEFINE_COMPONENT_OPTIONS_SYMBOL } from './symbols'
-import type { Fn } from './types'
+import type { Fn } from './utils/types'
 
 interface DefinedComponentInstance<Options = Record<string, unknown>> extends LitElement {
   [DEFINE_COMPONENT_OPTIONS_SYMBOL]: Options
