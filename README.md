@@ -29,7 +29,6 @@ It requires no decorators and allows developers to write approved standardized J
 - Shadow DOM control via shadowRoot: false
 - Real LitElement subclass under the hood
 
-
 ## Table of contents
 
 - Installation
@@ -262,12 +261,12 @@ defineElement({
 })
 ```
 
-
 ## Refs, computed, and watchEffect
 
-Maintain small reactive bits of state that integrate with Lit updates without needing @state or @property. Use `useRef()`
-for a mutable reactive value, `computed()` for derived values, and `watchEffect()` for running side effects in response to reactive state changes.
-
+Maintain small reactive bits of state that integrate with Lit updates without needing @state or @property. Use
+`useRef()`
+for a mutable reactive value, `computed()` for derived values, and `watchEffect()` for running side effects in response
+to reactive state changes.
 
 ```ts
 import {defineElement, useRef, computed, watchEffect} from 'lit-composition'
@@ -291,8 +290,10 @@ defineElement({
 ```
 
 - `useRef(initial)` returns an object with a `.value` that triggers re-render on change.
-- `computed(getter | {get, set})` creates a read-only or writable derived ref; it re-computes when any of its dependencies change.
-- `watchEffect(fn)` runs the given function immediately and re-runs it whenever any of its reactive dependencies change. Returns a stop function (currently a no-op).
+- `computed(getter | {get, set})` creates a read-only or writable derived ref; it re-computes when any of its
+  dependencies change.
+- `watchEffect(fn)` runs the given function immediately and re-runs it whenever any of its reactive dependencies change.
+  Returns a stop function (currently a no-op).
 
 You can also create refs outside a component and share them across multiple components.
 A ref is just a tiny reactive container; it is not tied to any specific element instance.

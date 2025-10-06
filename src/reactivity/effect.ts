@@ -1,5 +1,5 @@
 import { getCurrentInstance } from '../currentInstance'
-import { isFunction, isObject } from '../utils/is'
+import { isArray, isFunction, isObject } from '../utils/is'
 import { REF_SYMBOL } from '../symbols'
 import type { ReactiveElement } from 'lit'
 
@@ -94,7 +94,7 @@ const createEffect = <Value>(value: Value): Effect<Value> => ({
  * Reading `ref.value` tracks dependencies; writing to it notifies dependents.
  *
  * Note: This ref also integrates with Lit elements by requesting updates
- * from any component that read the value during a render cycle.
+ * from any component that reads the value during a render cycle.
  *
  * @typeParam T - The wrapped value type.
  * @param value - The initial value.
@@ -137,7 +137,7 @@ export type ComputedSetter<T> = (v: T) => void
 export interface ComputedRef<T> extends Effect<T> {}
 
 /**
- * Create a computed reference from a getter, or from an object with get/set.
+ * Create a computed reference from a getter or from an object with get/set.
  * The getter is tracked; consumers reading `.value` will update when deps change.
  *
  * @typeParam T - The computed value type.
@@ -179,14 +179,14 @@ export function computed<T>(
     const next = getFn()
     if (!initialized) {
       // first compute: establish cache without notifying dependents
-      cached = next as T
+      cached = next
       initialized = true
       dirty = false
       return
     }
     const old = cached
     if (!Object.is(old, next)) {
-      cached = next as T
+      cached = next
       dirty = false
       // Only notify when the computed value actually changed
       notifySubscribers(old)
@@ -215,4 +215,75 @@ export function computed<T>(
     },
   })
   return obj
+}
+
+/** A source for watch: a ref or a getter function. */
+export type WatchSource<T> = Effect<T> | (() => T)
+
+/** Stop handle for a watcher. */
+export type WatchStopHandle = () => void
+
+/** Options for watch. */
+export interface WatchOptions {
+  /** Whether to invoke the callback immediately with the current value(s). */
+  immediate?: boolean
+}
+
+const resolveSourceValue = <T>(src: WatchSource<T>): T => (isRef(src) ? src.value : (src as () => T)())
+
+const hasArrayChanged = (a: unknown[], b: unknown[]) => a.length !== b.length || a.some((v, i) => !Object.is(v, b[i]))
+
+const isArrayOfWatchSource = (x: unknown): x is WatchSource<unknown>[] => isArray(x)
+
+/**
+ * Watch one or multiple reactive sources (ref(s) or getter function(s)) and call `cb`
+ * when the value(s) change. Returns a stop function.
+ *
+ * - watch(ref, (newVal, oldVal) => {})
+ * - watch(getter, (newVal, oldVal) => {})
+ * - watch([ref1, getter2], ([new1, new2], [old1, old2]) => {})
+ */
+export function watch<T>(
+  source: WatchSource<T>,
+  cb: (newVal: T, oldVal: T | undefined) => void,
+  options?: WatchOptions
+): WatchStopHandle
+export function watch<T extends unknown[]>(
+  source: { [K in keyof T]: WatchSource<T[K]> },
+  cb: (newVal: T, oldVal: T | undefined) => void,
+  options?: WatchOptions
+): WatchStopHandle
+export function watch(
+  source: WatchSource<unknown> | WatchSource<unknown>[],
+  cb: (newVal: unknown, oldVal: unknown) => void,
+  options?: WatchOptions
+): WatchStopHandle {
+  const getter = isArrayOfWatchSource(source)
+    ? () => source.map((s) => resolveSourceValue(s))
+    : () => resolveSourceValue(source)
+
+  const clone = (val: unknown) => (isArray(val) ? val.slice() : val)
+
+  let oldVal: unknown
+  let initialized = false
+
+  const runner = () => {
+    const newVal = getter()
+    if (!initialized) {
+      initialized = true
+      if (options?.immediate) {
+        cb(newVal, undefined)
+      }
+      oldVal = clone(newVal)
+      return
+    }
+    const changed = isArray(newVal) && isArray(oldVal) ? hasArrayChanged(newVal, oldVal) : !Object.is(newVal, oldVal)
+    if (changed) {
+      const prev = oldVal
+      oldVal = clone(newVal)
+      cb(newVal, prev)
+    }
+  }
+  // return stop-handle
+  return watchEffect(runner)
 }

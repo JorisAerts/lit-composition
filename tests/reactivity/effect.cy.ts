@@ -1,5 +1,5 @@
 import { html } from 'lit'
-import { computed, defineElement, onConnected, useRef, watchEffect } from '../../src'
+import { computed, defineElement, onConnected, reactive, useRef, watch, watchEffect } from '../../src'
 
 describe('useRef', () => {
   it('useRef should be reactive', () => {
@@ -174,7 +174,7 @@ describe('watchEffect', () => {
     const calls: number[] = []
 
     defineElement({
-      name: 'test-effect-1',
+      name: 'test-watch-effect-1',
       shadowRoot: false,
       setup() {
         const count = useRef(0)
@@ -186,7 +186,7 @@ describe('watchEffect', () => {
       },
     })
 
-    cy.mount(html` <test-effect-1></test-effect-1> `).as('component')
+    cy.mount(html` <test-watch-effect-1></test-watch-effect-1> `).as('component')
     cy.get('@component').find('#btn').as('btn')
 
     // watchEffect runs immediately with initial value 0
@@ -315,6 +315,154 @@ describe('watchEffect', () => {
     cy.get('@component').then(() => {
       expect(e1).to.deep.equal([0, 1])
       expect(e2).to.deep.equal([0, 10])
+    })
+  })
+})
+
+describe('watch', () => {
+  it('watch(ref1, ...) behaves correctly ', () => {
+    const calls: number[] = []
+
+    defineElement({
+      name: 'test-watch-1',
+      shadowRoot: false,
+      setup() {
+        const count = useRef(0)
+        watch(count, () => calls.push(count.value))
+        return () => html`<button id="btn" @click="${() => count.value++}">${count.value}</button>`
+      },
+    })
+
+    cy.mount(html` <test-watch-1></test-watch-1> `).as('component')
+    cy.get('@component').find('#btn').as('btn')
+
+    // watchEffect runs immediately with initial value 0
+    cy.get('@component').then(() => {
+      expect(calls).to.deep.equal([])
+    })
+
+    cy.get('@btn').click()
+    cy.get('@component').then(() => {
+      // watchEffect should re-run with updated value 1
+      expect(calls).to.deep.equal([1])
+    })
+
+    cy.get('@btn').click()
+    cy.get('@component').then(() => {
+      // watchEffect should re-run again with updated value 2
+      expect(calls).to.deep.equal([1, 2])
+    })
+  })
+
+  it('watch(ref1, ..., { immediate: true }) behaves correctly', () => {
+    const calls: number[] = []
+
+    defineElement({
+      name: 'test-watch-2',
+      shadowRoot: false,
+      setup() {
+        const count = useRef(0)
+        watch(count, () => calls.push(count.value), { immediate: true })
+        return () => html`<button id="btn" @click="${() => count.value++}">${count.value}</button>`
+      },
+    })
+
+    cy.mount(html` <test-watch-2></test-watch-2> `).as('component')
+    cy.get('@component').find('#btn').as('btn')
+
+    // watchEffect runs immediately with initial value 0
+    cy.get('@component').then(() => {
+      expect(calls).to.deep.equal([0])
+    })
+
+    cy.get('@btn').click()
+    cy.get('@component').then(() => {
+      // watchEffect should re-run with updated value 1
+      expect(calls).to.deep.equal([0, 1])
+    })
+
+    cy.get('@btn').click()
+    cy.get('@component').then(() => {
+      // watchEffect should re-run again with updated value 2
+      expect(calls).to.deep.equal([0, 1, 2])
+    })
+  })
+
+  it('watch([ref1, ref2], ...) behaves correctly with multiple refs ', () => {
+    const calls: number[][] = []
+
+    defineElement({
+      name: 'test-watch-3',
+      shadowRoot: false,
+      setup() {
+        const count = useRef(0)
+        const count2 = useRef(0)
+        watch([count, count2], () => calls.push([count.value, count2.value]))
+        return () => html`
+          <button id="btn" @click="${() => count.value++}">${count.value}</button>
+          <button id="btn2" @click="${() => count2.value++}">${count2.value}</button>
+        `
+      },
+    })
+
+    cy.mount(html` <test-watch-3></test-watch-3> `).as('component')
+    cy.get('@component').find('#btn').as('btn')
+    cy.get('@component').find('#btn2').as('btn2')
+
+    // watchEffect runs immediately with initial value 0
+    cy.get('@component').then(() => {
+      expect(calls).to.deep.equal([])
+    })
+
+    cy.get('@btn').click()
+    cy.get('@component').then(() => {
+      // watchEffect should re-run with updated value 1
+      expect(calls).to.deep.equal([[1, 0]])
+    })
+
+    cy.get('@btn2').click()
+    cy.get('@component').then(() => {
+      // watchEffect should re-run again with updated value 2
+      expect(calls).to.deep.equal([
+        [1, 0],
+        [1, 1],
+      ])
+    })
+  })
+
+  it('watch(() => reactive1.value, ...) behaves correctly', () => {
+    const calls: number[] = []
+
+    defineElement({
+      name: 'test-watch-4',
+      shadowRoot: false,
+      setup() {
+        const count = { count: useRef(0) }
+        const r = reactive(count)
+        watch(
+          () => r.count,
+          () => calls.push(r.count)
+        )
+        return () => html`<button id="btn" @click="${() => r.count++}">${r.count}</button>`
+      },
+    })
+
+    cy.mount(html` <test-watch-4></test-watch-4> `).as('component')
+    cy.get('@component').find('#btn').as('btn')
+
+    // watchEffect runs immediately with initial value 0
+    cy.get('@component').then(() => {
+      expect(calls).to.deep.equal([])
+    })
+
+    cy.get('@btn').click()
+    cy.get('@component').then(() => {
+      expect(calls).to.deep.equal([1])
+    })
+
+    cy.get('@btn').click()
+    cy.get('@component').then(() => {
+      expect(calls).to.deep.equal([1, 2])
     })
   })
 })
