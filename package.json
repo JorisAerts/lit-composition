@@ -32,8 +32,7 @@
     "test": "pnpm test:unit --run && pnpm cy:run",
     "test:unit": "vitest",
     "cy:open": "cypress open",
-    "cy:run": "cypress run --component",
-    "prepublish": "pnpm run dist"
+    "cy:run": "cypress run --component"
   },
   "devDependencies": {
     "@eslint/js": "^9.37.0",
