@@ -1,19 +1,10 @@
 export { getCurrentInstance } from './currentInstance'
-export { mixin, type Mixin, $ref } from './utils'
-
+export * from './utils'
 export * from './defineElement'
 export * from './reactivity'
-export * from './utils/mixin'
 
-export type * from './defineElement'
-
-export {
-  onConnected,
-  onDisconnected,
-  onShouldUpdate,
-  onWillUpdate,
-  onFirstUpdated,
-  onUpdated,
-  onPerformUpdate,
-  onUpdate,
-} from './defineElement/hooks'
+/**
+ * The ref() directive is a Lit directive that creates a reactive reference to a DOM node.
+ * It's exported as $ref for convenience.
+ */
+export { ref as $ref } from 'lit/directives/ref.js'

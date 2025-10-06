@@ -1,8 +1,8 @@
 import type { LitElement } from 'lit'
 import { type PropertyValues, type ReactiveElement } from 'lit'
 import { DEFINE_COMPONENT_OPTIONS_SYMBOL } from '../symbols'
-import { dummyFn } from '../utils'
 import { getCurrentOptions } from '../currentInstance'
+import { dummyFn } from '../utils/dummyFn'
 
 type LitRender = LitElement['render']
 
@@ -26,7 +26,6 @@ type ChangedPropertiesConsumer<DefinedComponents extends ReactiveElement> = (
   changedProperties: PropertyValues<DefinedComponents>
 ) => void
 
- 
 const fnSubscriber = <FN extends (...args: any[]) => unknown>() => {
   const subscribers = [] as FN[]
   return {
@@ -34,7 +33,7 @@ const fnSubscriber = <FN extends (...args: any[]) => unknown>() => {
     run: (t: unknown, ...args: Parameters<FN>) => subscribers.map((fn) => fn.apply(t, args)),
   }
 }
- 
+
 type FnSubscriber<T extends (...args: any[]) => unknown> = ReturnType<typeof fnSubscriber<T>>
 
 export const withHooks = <

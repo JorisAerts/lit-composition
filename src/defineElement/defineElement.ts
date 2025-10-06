@@ -1,6 +1,6 @@
 import type { CSSResultGroup, PropertyDeclaration } from 'lit'
 import { LitElement } from 'lit'
-import { dummyFn } from '../utils'
+import { dummyFn } from '../utils/dummyFn'
 import type { ValidCustomElementName } from '../utils/types'
 import { isFunction, isString, isUndefined } from '../utils/is'
 import { withCurrentInstance } from '../currentInstance'
