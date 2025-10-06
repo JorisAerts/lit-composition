@@ -1,4 +1,4 @@
-import type { Fn } from '../types'
+import type { Fn } from './types'
 
 const is = (value: unknown, type: string): boolean => Object.prototype.toString.call(value) === `[object ${type}]`
 

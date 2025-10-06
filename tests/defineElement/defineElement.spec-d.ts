@@ -1,6 +1,6 @@
 import { expectTypeOf, it } from 'vitest'
-import type { PropType } from '../src'
-import { defineElement } from '../src'
+import type { PropType } from '../../src'
+import { defineElement } from '../../src'
 import { html } from 'lit'
 
 interface TestInterface {

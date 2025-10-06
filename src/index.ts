@@ -1,7 +1,11 @@
 export { getCurrentInstance } from './currentInstance'
-export { mixin } from './utils'
+export { mixin, type Mixin, $ref } from './utils'
 
 export * from './defineElement'
+export * from './reactivity'
+export * from './utils/mixin'
+
+export type * from './defineElement'
 
 export {
   onConnected,
@@ -12,8 +16,4 @@ export {
   onUpdated,
   onPerformUpdate,
   onUpdate,
-} from './hooks'
-
-export * from './reactivity'
-
-export * from './utils/mixin'
+} from './defineElement/hooks'
