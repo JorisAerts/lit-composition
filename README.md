@@ -313,6 +313,82 @@ defineElement({
 })
 ```
 
+### takeRef — use refs from "regular" Lit elements
+
+`takeRef` is a small utility that lets you attach an existing `useRef()` or `computed()` ref to a plain `LitElement`
+instance so that the element will subscribe to updates from that ref and request updates when the ref changes.
+
+Why this exists
+
+- `useRef()` and `computed()` return lightweight reactive containers that integrate with lit-composition's
+  reactivity system. Components created with `defineElement()` automatically pick up refs that are read during their
+  render/setup lifecycle. Classic `LitElement` classes don't participate in that setup lifecycle, so `takeRef` lets you
+  manually register a `LitElement` instance as a subscriber for an existing ref.
+
+API
+
+- takeRef(element: ReactiveElement, ref: Effect<T>) => Effect<T>
+
+Notes
+
+- `takeRef` does not clone the ref — it returns the same ref you pass in. It simply registers the provided `element`
+  as a subscriber so that when the ref changes the element's `requestUpdate()` is called.
+- Works with both `useRef()` and `computed()`.
+
+Examples
+
+1) Using a shared `useRef` inside a classic `LitElement`:
+
+```ts
+import {LitElement, html} from 'lit'
+import {useRef, takeRef} from 'lit-composition'
+
+const shared = useRef(123)
+
+class MyClassic extends LitElement {
+    static properties = {ref: {type: Object}}
+
+    constructor() {
+        super()
+        // register this element to receive updates when `shared` changes
+        this.ref = takeRef(this, shared)
+    }
+
+    render() {
+        return html`<div>${this.ref.value}</div>`
+    }
+}
+
+customElements.define('my-classic', MyClassic)
+```
+
+2) Attaching a computed ref to a classic `LitElement`:
+
+```ts
+import {LitElement, html} from 'lit'
+import {computed, takeRef} from 'lit-composition'
+
+const comp = computed(() => 42)
+
+class CompClassic extends LitElement {
+    static properties = {ref: {type: Object}}
+
+    constructor() {
+        super()
+        this.ref = takeRef(this, comp)
+    }
+
+    render() {
+        return html`<div>${this.ref.value}</div>`
+    }
+}
+
+customElements.define('comp-classic', CompClassic)
+```
+
+3) When using `defineElement()` you usually don't need `takeRef` because the setup/render lifecycle will subscribe
+   automatically when you read refs. `takeRef` is intended for interoperability with non-defineElement consumers.
+
 ## Watching reactive state with `watch`
 
 The `watch` function lets you run a callback when one or more refs or computed values change, similar to Vue's `watch`.
