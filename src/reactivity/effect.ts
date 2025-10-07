@@ -126,7 +126,6 @@ export const useRef = <T>(value: T) => {
   return object
 }
 
-// TODO: return new Ref with fixed instance
 export const takeRef = <Value>(element: ReactiveElement, ref: Effect<Value>): typeof ref => {
   ;(ref[REF_SYMBOL] as (el: ReactiveElement) => unknown)(element) as Effect<Value>
   return ref
