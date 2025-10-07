@@ -2,6 +2,7 @@ import { getCurrentInstance } from '../currentInstance'
 import { isArray, isFunction, isObject } from '../utils/is'
 import { REF_SYMBOL } from '../symbols'
 import type { ReactiveElement } from 'lit'
+import type { Fn } from '../utils/types'
 
 const VALUE = 'value'
 
@@ -12,7 +13,7 @@ const VALUE = 'value'
  * @typeParam T - The wrapped value type.
  */
 export interface Effect<T> {
-  [REF_SYMBOL]: typeof REF_SYMBOL
+  [REF_SYMBOL]: Fn
   value: T
 }
 
@@ -84,10 +85,11 @@ export function watchEffect(fn: EffectFn): () => void {
  */
 export const isRef = (value: unknown): value is Effect<unknown> => isObject(value) && REF_SYMBOL in value
 
-const createEffect = <Value>(value: Value): Effect<Value> => ({
-  [REF_SYMBOL]: REF_SYMBOL,
-  value,
-})
+const createEffect = <Value>(value: Value, subscribe: (el: ReactiveElement) => unknown): Effect<Value> =>
+  Object.defineProperty({ value } as Effect<Value>, REF_SYMBOL, {
+    enumerable: false,
+    get: () => subscribe,
+  })
 
 /**
  * Create a reactive reference that holds a value.
@@ -101,8 +103,8 @@ const createEffect = <Value>(value: Value): Effect<Value> => ({
  * @returns A reactive ref object with a `value` property.
  */
 export const useRef = <T>(value: T) => {
-  const object = createEffect(value)
   const subscribers = new Set<ReactiveElement>()
+  const object = createEffect(value, (instance) => subscribers.add(instance))
   Object.defineProperty(object, VALUE, {
     configurable: false,
     get: () => {
@@ -122,6 +124,12 @@ export const useRef = <T>(value: T) => {
     },
   })
   return object
+}
+
+// TODO: return new Ref with fixed instance
+export const takeRef = <Value>(element: ReactiveElement, ref: Effect<Value>): typeof ref => {
+  ;(ref[REF_SYMBOL] as (el: ReactiveElement) => unknown)(element) as Effect<Value>
+  return ref
 }
 
 /**
@@ -157,8 +165,8 @@ export function computed<T>(
   let cached: T
   let initialized = false
 
-  const target = createEffect<T | undefined>(undefined)
   const subscribers = new Set<ReactiveElement>()
+  const target = {}
 
   const notifySubscribers = (
     old?: T //
@@ -196,7 +204,7 @@ export function computed<T>(
     }
   })
 
-  const obj = {} as ComputedRef<T>
+  const obj = createEffect<T | undefined>(undefined, (instance) => subscribers.add(instance)) as ComputedRef<T>
   Object.defineProperty(obj, VALUE, {
     configurable: false,
     get: () => {

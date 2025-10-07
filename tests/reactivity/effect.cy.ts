@@ -1,5 +1,6 @@
-import { html } from 'lit'
-import { computed, defineElement, onConnected, reactive, useRef, watch, watchEffect } from '../../src'
+import { html, LitElement } from 'lit'
+import type { Effect } from '../../src'
+import { computed, defineElement, onConnected, reactive, takeRef, useRef, watch, watchEffect } from '../../src'
 
 describe('useRef', () => {
   it('useRef should be reactive', () => {
@@ -105,6 +106,58 @@ describe('useRef', () => {
     cy.get('@button2').click()
     cy.get('@button1').contains(`4`).should('exist')
     cy.get('@button2').contains(`8`).should('exist')
+  })
+})
+
+describe('takeRef', () => {
+  it("take a useRef into a 'regular' Lit element", () => {
+    const ref = useRef(123)
+
+    class Tmp extends LitElement {
+      static properties = {
+        ref: { type: Object },
+      }
+
+      declare ref: Effect<unknown>
+
+      constructor() {
+        super()
+        this.ref = takeRef(this, ref)
+      }
+
+      render() {
+        return html`<div>${this.ref.value}</div>`
+      }
+    }
+    customElements.define('test-takeref-1', Tmp)
+
+    cy.mount(html` <test-takeref-1></test-takeref-1> `).as('component')
+    cy.get('@component').contains('123').should('exist')
+  })
+
+  it("take a computed into a 'regular' Lit element", () => {
+    const ref = computed(() => 123)
+
+    class Tmp extends LitElement {
+      static properties = {
+        ref: { type: Object },
+      }
+
+      declare ref: Effect<unknown>
+
+      constructor() {
+        super()
+        this.ref = takeRef(this, ref)
+      }
+
+      render() {
+        return html`<div>${this.ref.value}</div>`
+      }
+    }
+    customElements.define('test-takeref-computed-1', Tmp)
+
+    cy.mount(html` <test-takeref-computed-1></test-takeref-computed-1> `).as('component')
+    cy.get('@component').contains('123').should('exist')
   })
 })
 
