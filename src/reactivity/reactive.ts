@@ -1,7 +1,7 @@
 import { REACTIVE_OBJECT_SYMBOL } from '../symbols'
 import type { Effect } from './effect'
-import { isRef } from './effect'
 import { isObject } from '../utils/is'
+import { isRef } from './isRef'
 
 type Reactive<T> = T extends object //
   ? {
