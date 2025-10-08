@@ -1,6 +1,3 @@
-export * from './dummyFn'
 export * from './mixin'
-export * from './proxy'
-export * from './$ref'
-export type * from './types'
-export * as reducers from './reducers'
+
+export { type ValidCustomElementName } from './types'

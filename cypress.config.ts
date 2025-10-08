@@ -3,7 +3,6 @@ import { defineConfig } from 'cypress'
 export default defineConfig({
   fileServerFolder: '.',
   modifyObstructiveCode: false,
-  experimentalStudio: true,
   video: true,
   videosFolder: './node_modules/.cypress/videos',
   screenshotsFolder: './node_modules/.cypress/screenshots',

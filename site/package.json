@@ -10,7 +10,7 @@
   "dependencies": {
     "@lit-labs/router": "^0.1.4",
     "lit": "^3.3.1",
-    "lit-composition": "0.0.11"
+    "lit-composition": "0.1.0"
   },
   "devDependencies": {
     "typescript": "~5.9.3",
