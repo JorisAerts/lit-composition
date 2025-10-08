@@ -1,11 +1,11 @@
 # lit-composition
 
+<img src="./logo.svg" height="200">
+
 [![test](https://github.com/JorisAerts/lit-composition/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/JorisAerts/lit-composition/actions/workflows/test.yml)
 [![npm](https://img.shields.io/npm/v/lit-composition/latest?logo=npm&label=NPM)](https://www.npmjs.com/package/lit-composition)
 [![size](https://img.shields.io/bundlephobia/minzip/lit-composition?label=Size)](https://www.npmjs.com/package/lit-composition)
 [![license](https://img.shields.io/github/license/JorisAerts/lit-composition?label=License)](https://github.com/JorisAerts/lit-composition?tab=MIT-1-ov-file)
-
-<h1 class="icon" style="font-size: 1600%; margin:-.25em 0; padding: 2rem">📦</h1>
 
 A tiny toolkit for building Lit Web Components with less boilerplate.
 It requires no decorators and allows developers to write approved standardized JavaScript / TypeScript.
