@@ -8,6 +8,10 @@ $spacer: 4px;
   flex-direction: column;
 }
 
+.d-sticky {
+  position: sticky;
+}
+
 .d-inline {
   display: inline;
 }
@@ -45,11 +49,13 @@ $spacer: 4px;
   }
 
   .px-#{$i} {
-    padding: inherit $i * $spacer;
+    padding-left: $i * $spacer;
+    padding-right: $i * $spacer;
   }
 
   .py-#{$i} {
-    padding: $i * $spacer inherit;
+    padding-top: $i * $spacer;
+    padding-bottom: $i * $spacer;
   }
 
 }
