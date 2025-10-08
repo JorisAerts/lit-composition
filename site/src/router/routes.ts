@@ -1,6 +1,6 @@
 import { html } from 'lit'
 import type { RouteConfig } from '@lit-labs/router/routes.js'
-import * as md from '../md'
+import * as md from '../md-pages.ts'
 
 import '../pages/home'
 import '../components/markdown'

@@ -1,8 +1,9 @@
 import { defineElement } from 'lit-composition'
 import { md } from '../../utils/md.ts'
-import { ifDefined } from 'lit/directives/if-defined.js'
 import cssMarkdown from '../../style/markdown.scss?inline'
 import { unsafeCSS } from 'lit'
+
+// TODO: pre-render the markdown
 
 defineElement({
   name: 'lc-md',
@@ -11,6 +12,6 @@ defineElement({
     value: { type: String, attribute: false },
   },
   setup() {
-    return () => ifDefined(md`${this.value}`)
+    return () => md`${this.value}`
   },
 })

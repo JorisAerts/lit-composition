@@ -13,6 +13,7 @@
     "lit-composition": "workspace:*"
   },
   "devDependencies": {
+    "@shikijs/markdown-it": "^3.13.0",
     "@types/markdown-it": "^14.1.2",
     "@types/markdown-it-attrs": "^4.1.3",
     "@types/markdown-it-container": "^2.0.10",
@@ -20,12 +21,10 @@
     "markdown-it": "^14.1.0",
     "markdown-it-anchor": "^9.2.0",
     "markdown-it-async": "^2.2.0",
-    "markdown-it-attrs": "^4.3.1",
-    "markdown-it-cjk-friendly": "^1.2.0",
     "markdown-it-container": "^4.0.0",
     "markdown-it-emoji": "^3.0.0",
-    "markdown-it-mathjax3": "^5.2.0",
     "sass": "^1.93.2",
+    "shiki": "^3.13.0",
     "typescript": "~5.9.3",
     "vite": "^7.1.9"
   }

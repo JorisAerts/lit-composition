@@ -14,7 +14,20 @@ defineElement({
     unsafeCSS(cssPage),
     css`
       :host {
+        --side-bar-width: 300px;
+
         width: 100%;
+      }
+
+      aside.sidenav {
+        position: fixed;
+        width: var(--side-bar-width);
+        flex: 0 0 auto;
+        max-height: 100vh;
+        top: 60px;
+      }
+      main {
+        margin-left: var(--side-bar-width);
       }
     `,
   ],
@@ -24,7 +37,7 @@ defineElement({
       html`<div>
         <app-nav></app-nav>
         <div class="d-flex" style="max-height: 100%">
-          <div class="pa-4" style="flex: 0 0 auto; width: 250px; max-height: 100vh; position: sticky; top:60px;">
+          <aside class="sidenav pa-4" style="">
             <ul>
               <li><a href="${links.GettingStarted}">Getting started</a></li>
               <li><a href="${links.API}">API</a></li>
@@ -35,8 +48,8 @@ defineElement({
               <li><a href="${links.ContextProviders}">Context</a></li>
               <li><a href="${links.Contributing}">Contributing</a></li>
             </ul>
-          </div>
-          <div class="pa-4" style="flex: 1 1 auto;">${router.outlet()}</div>
+          </aside>
+          <main class="pa-4" style="flex: 1 1 auto;">${router.outlet()}</main>
         </div>
       </div>`
   },
