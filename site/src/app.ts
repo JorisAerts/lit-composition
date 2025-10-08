@@ -15,19 +15,35 @@ defineElement({
     css`
       :host {
         --side-bar-width: 300px;
+        --nav-bar-height: 80px;
 
         width: 100%;
       }
 
       aside.sidenav {
         position: fixed;
+        top: var(--nav-bar-height);
         width: var(--side-bar-width);
         flex: 0 0 auto;
         max-height: 100vh;
-        top: 60px;
+
+        li {
+          padding: 8px 0;
+          list-style-type: circle;
+
+          &:hover {
+            list-style-type: disc;
+            text-decoration: underline;
+          }
+
+          a {
+            display: block;
+          }
+        }
       }
       main {
-        margin-left: var(--side-bar-width);
+        margin: var(--nav-bar-height) 0 0 var(--side-bar-width);
+        max-width: calc(1280px - var(--side-bar-width));
       }
     `,
   ],

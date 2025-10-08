@@ -5,6 +5,9 @@ import anchor from 'markdown-it-anchor'
 import { full as emoji } from 'markdown-it-emoji'
 
 const asyncRenderer = MarkdownItAsync({
+  html: true,
+  linkify: true,
+
   async highlight(code, lang) {
     const { codeToHtml } = await import('shiki')
     return codeToHtml(code, { lang, theme: 'material-theme-ocean' })

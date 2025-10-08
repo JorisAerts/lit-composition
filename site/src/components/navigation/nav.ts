@@ -18,16 +18,27 @@ defineElement({
         background: var(--background-color);
         border-bottom: 1px solid var(--border-color);
 
+        box-sizing: border-box;
+        position: fixed;
+        top: 0;
+        z-index: 100;
+        width: 100%;
+
         h1 {
           font-weight: 400;
           margin: 16px;
+        }
+
+        a {
+          text-decoration: none;
+          color: white;
         }
       }
     `,
   ],
   setup() {
     return () =>
-      html` <nav style="position: sticky; top: 0; z-index: 100;" class="align-center px-4">
+      html` <nav class="align-center px-4">
         <div class="d-flex gc-4 align-center">
           <img height="40" src="${lcLogo}" alt="Lit composition logo" />
           <h1>Lit composition</h1>
