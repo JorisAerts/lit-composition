@@ -13,7 +13,6 @@
       "vite/client"
     ],
     "esModuleInterop": true,
-    "composite": true,
     "skipLibCheck": true,
     /* Bundler mode */
     "moduleResolution": "bundler",

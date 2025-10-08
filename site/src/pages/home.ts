@@ -6,13 +6,12 @@ import cssHelpers from '../style/helpers.scss?inline'
 
 defineElement({
   name: 'lc-home',
-  shadowRoot: false,
   styles: [unsafeCSS(css), unsafeCSS(cssHelpers)],
   setup() {
     return () => html`
-      <div class="d-flex">
-        <img height="100" src="${lcLogo}" alt="Lit composition logo" />
-        Lit composition
+      <div class="d-flex gc-4 align-center">
+        <img height="75" src="${lcLogo}" alt="Lit composition logo" />
+        <h1>Lit composition</h1>
       </div>
     `
   },

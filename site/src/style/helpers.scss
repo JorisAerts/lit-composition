@@ -1,7 +1,34 @@
+$spacer: 4px;
+
 .d-flex {
   display: flex;
+}
+
+.d-inline {
+  display: inline;
+}
+
+.d-inline-flex {
+  display: inline-flex;
 }
 
 .align-center {
   align-items: center;
 }
+
+@for $i from 1 through 12 {
+  .gap-#{$i} {
+    gap: $i * $spacer;
+  }
+
+  .gc-#{$i} {
+    column-gap: $i * $spacer;
+  }
+
+  .gr-#{$i} {
+    row-gap: $i * $spacer;
+  }
+
+}
+
+
