@@ -31,6 +31,6 @@
   "include": [
     "src",
     "../logo.svg",
-    "../docs/*.md"
+    "../docs/**/*.md"
   ]
 }

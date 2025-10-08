@@ -17,3 +17,8 @@ declare module '*.scss' {
   const content: Record<string, string>
   export = content
 }
+
+declare module '*.md' {
+  const src: string
+  export default src
+}
