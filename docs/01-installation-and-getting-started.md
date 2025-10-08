@@ -1,9 +1,9 @@
-## Installation & Getting Started
+# Installation & Getting Started
 
 This page shows how to install lit-composition and create your first component. It assumes you already have
 Node.js (18+) and a package manager such as pnpm, npm, or yarn.
 
-Installation
+## Installation
 
 Install the library and the required peer `lit` package:
 
@@ -19,7 +19,7 @@ If you plan to use context helpers (provide/inject) also install `@lit/context`:
 pnpm add @lit/context
 ```
 
-Minimal example (object style)
+## Minimal example (object style)
 
 Create a file and import `defineElement`:
 
@@ -37,7 +37,7 @@ defineElement({
 })
 ```
 
-Functional shorthand
+## Functional shorthand
 
 For tiny, stateless elements you can use the shorthand:
 
@@ -48,7 +48,7 @@ import {html} from 'lit'
 defineElement('hello-cdn', () => html`Hello from CDN`)
 ```
 
-Run locally
+## Run locally
 
 The repository uses Vite for the demo/site. From the workspace root:
 
@@ -56,7 +56,7 @@ The repository uses Vite for the demo/site. From the workspace root:
 pnpm dev
 ```
 
-What to read next
+## What to read next
 
 - `docs/02-api.md` — reference for `defineElement` options and examples
 - `docs/03-hooks.md` — lifecycle hooks and usage patterns

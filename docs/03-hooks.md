@@ -1,9 +1,9 @@
-## Lifecycle hooks
+# Lifecycle hooks
 
 lit-composition exposes small helpers that register callbacks and map to Lit's lifecycle methods. They are thin
 abstractions meant to be called during `setup()` only.
 
-Available hooks (import from `lit-composition`):
+## Available hooks (import from `lit-composition`)
 
 - `onConnected(cb)` — maps to `connectedCallback`
 - `onDisconnected(cb)` — maps to `disconnectedCallback`
@@ -14,7 +14,7 @@ Available hooks (import from `lit-composition`):
 - `onFirstUpdated(cb)` — maps to `firstUpdated`
 - `onUpdated(cb)` — maps to `updated`
 
-Rules & gotchas
+## Rules & gotchas
 
 - Call hooks only during `setup()`; they capture the current instance's lifecycle handlers. Calling them at render
   time will not register correctly.
@@ -23,8 +23,9 @@ Rules & gotchas
 - Hooks are composable: helper functions invoked from `setup()` can call hooks and register behavior for the parent
   component.
 
-Example
+## Examples
 
+Basic:
 ```ts
 import {defineElement, onConnected, onUpdated} from 'lit-composition'
 import {html} from 'lit'
@@ -38,6 +39,21 @@ defineElement({
       if (changed.has('counter')) console.log('counter changed')
     })
     return () => html`<div>${this.counter}</div>`
+  },
+})
+```
+
+Gate updates with onShouldUpdate:
+```ts
+import {defineElement, onShouldUpdate} from 'lit-composition'
+import {html} from 'lit'
+
+defineElement({
+  name: 'even-only',
+  props: { n: { type: Number, default: 0 } },
+  setup() {
+    onShouldUpdate((changed) => changed.has('n') && (this.n % 2 === 0))
+    return () => html`${this.n}`
   },
 })
 ```
