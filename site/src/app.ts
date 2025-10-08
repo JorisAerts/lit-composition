@@ -1,11 +1,11 @@
 import { css, html } from 'lit'
 import { defineElement } from 'lit-composition'
-import { Router } from '@lit-labs/router'
 import './components/navigation/nav'
 import { routes } from './router'
+import { Router } from '@lit-labs/router'
 
 defineElement({
-  name: 'lit-app',
+  name: 'lc-app',
   styles: [
     css`
       :host {

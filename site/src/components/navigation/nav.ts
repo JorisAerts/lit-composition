@@ -20,8 +20,8 @@ defineElement({
     return () =>
       html` <nav>
         <div style="align-self: stretch; flex-grow: 1;"></div>
-        <a href="/site/public">Home</a>
-        <a href="/site/public">Help</a>
+        <a href="/">Home</a>
+        <a href="/help">Help</a>
       </nav>`
   },
 })
