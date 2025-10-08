@@ -1,10 +1,10 @@
 import { html, unsafeCSS } from 'lit'
 import { defineElement } from 'lit-composition'
-import lcLogo from '../../../logo.svg' with { type: 'svg' }
 import css from './home.scss?inline'
 import cssHelpers from '../style/helpers.scss?inline'
-import gettingStarted from '../../../docs/01-installation-and-getting-started.md?raw'
 import { md } from '../utils/md.ts'
+import lcLogo from '../../../logo.svg' with { type: 'svg' }
+import gettingStarted from '../../../docs/01-installation-and-getting-started.md?raw'
 
 defineElement({
   name: 'lc-home',

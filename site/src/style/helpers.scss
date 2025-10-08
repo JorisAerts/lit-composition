@@ -4,6 +4,10 @@ $spacer: 4px;
   display: flex;
 }
 
+.flex-column {
+  flex-direction: column;
+}
+
 .d-inline {
   display: inline;
 }
@@ -16,6 +20,8 @@ $spacer: 4px;
   align-items: center;
 }
 
+// FLEX-GAP
+
 @for $i from 1 through 12 {
   .gap-#{$i} {
     gap: $i * $spacer;
@@ -27,6 +33,23 @@ $spacer: 4px;
 
   .gr-#{$i} {
     row-gap: $i * $spacer;
+  }
+
+}
+
+// PADDING
+
+@for $i from 1 through 12 {
+  .pa-#{$i} {
+    padding: $i * $spacer;
+  }
+
+  .px-#{$i} {
+    padding: inherit $i * $spacer;
+  }
+
+  .py-#{$i} {
+    padding: $i * $spacer inherit;
   }
 
 }

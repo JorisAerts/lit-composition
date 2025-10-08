@@ -1,0 +1,11 @@
+code {
+  background: rgba(255, 255, 255, 0.05);
+  font-family: monospace, "JetBrains Mono", "Source Code Pro", "Fira Code", "Fira Mono", "Roboto Mono", "Consolas", "Courier New", Courier, monospace;
+
+  @at-root pre & {
+    display: inline-block;
+    padding: .5em .5em;
+    font-size: .85em;
+  }
+
+}
