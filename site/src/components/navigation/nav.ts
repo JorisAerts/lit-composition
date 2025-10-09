@@ -44,7 +44,7 @@ defineElement({
           <h1>Lit composition</h1>
         </div>
         <div style="align-self: stretch; flex-grow: 1;"></div>
-        <a href="/">Home</a>
+        <a href="/lit-composition/">Home</a>
         <a href="https://github.com/JorisAerts/lit-composition">
           <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 25px">
             <title>GitHub</title>
