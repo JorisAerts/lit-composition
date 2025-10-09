@@ -1,6 +1,6 @@
 # Sample workflow for building and deploying a VitePress site to GitHub Pages
 #
-name: Deploy VitePress site to Pages
+name: Deploy site to GitHub Pages
 
 on:
   # push:
@@ -55,7 +55,9 @@ jobs:
 
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v4
+        id: deployment
         with:
+          name: deployment
           path: site/dist
 
   # Deployment job
@@ -73,3 +75,5 @@ jobs:
       - name: Deploy artifact
         id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          artifact_name: deployment
