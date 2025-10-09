@@ -1,3 +1,44 @@
+# Copilot Instructions for lit-composition (condensed)
+
+This file helps AI coding agents and contributors be productive in this repository. Use it as the quick, actionable
+source of truth when making code changes, generating docs, or writing tests.
+
+Key points to rely on:
+- Primary API: `defineElement(...)` (see `src/defineElement/defineElement.ts`). It returns a LitElement subclass and
+  optionally registers it as a custom element.
+- Two forms: object options with `setup()`/`render()` or the functional shorthand `defineElement('name', () => html`...`).
+- setup() runs inside the constructor (bound to the instance). If setup returns a function, that function is used as
+  the component's render method.
+- Default values from `props` are assigned after `setup()` via `assignDefaultValues` (see `defineElement.ts`).
+- Shadow vs light DOM: `shadowRoot: false` causes `createRenderRoot()` to return `this`.
+- Lifecycle hooks are provided under `src/defineElement/hooks.ts` and must be registered inside `setup()`.
+
+Project structure (what matters to AI):
+- `src/defineElement/defineElement.ts` — core implementation and behavior contracts.
+- `src/defineElement/hooks.ts` — hook registration helpers used inside `setup()`.
+- `src/reactivity/*` — `useRef`, `computed`, `watch`, `takeRef` and integration points.
+- `src/context/*` — `provide`/`inject` helpers (experimental, wraps `@lit/context`).
+- `src/utils/*` — small helpers (mixin, is, browser registration).
+
+Developer workflows (commands discovered in README/package.json):
+- Dev server: `pnpm dev` (Vite)
+- Build: `pnpm build`
+- Unit tests: `pnpm test` (Vitest)
+- Cypress: `pnpm cypress` or `pnpm cypress:open` depending on scripts
+- Publish helper: `node scripts/prepare-publish.js`
+
+AI-specific rules when proposing edits:
+- Keep changes minimal and local to the feature. Avoid global side-effects (no top-level `customElements.define` outside
+  `defineElement` usage).
+- Prefer adding focused unit tests in `tests/` next to the module you changed; for components use DOM assertions and
+  `await el.updateComplete`.
+- Hooks must be called only during `setup()`; do not move hook registration to render time.
+- When changing public API (exports), update `src/index.ts` and add a short usage example in `docs/`.
+
+When in doubt: reference these files for authoritative behavior: `src/defineElement/defineElement.ts`,
+`src/defineElement/hooks.ts`, and `src/reactivity/*`.
+
+If you find this file incomplete, update it and open a PR describing the added knowledge.
 # Copilot Instructions + Contributor Guide for lit-composition
 
 This document gives AI coding assistants (Copilot/ChatGPT) and human contributors the finest context to work effectively

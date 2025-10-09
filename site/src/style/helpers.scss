@@ -1,0 +1,63 @@
+$spacer: 4px;
+
+.d-flex {
+  display: flex;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.d-sticky {
+  position: sticky;
+}
+
+.d-inline {
+  display: inline;
+}
+
+.d-inline-flex {
+  display: inline-flex;
+}
+
+.align-center {
+  align-items: center;
+}
+
+// FLEX-GAP
+
+@for $i from 1 through 12 {
+  .gap-#{$i} {
+    gap: $i * $spacer;
+  }
+
+  .gc-#{$i} {
+    column-gap: $i * $spacer;
+  }
+
+  .gr-#{$i} {
+    row-gap: $i * $spacer;
+  }
+
+}
+
+// PADDING
+
+@for $i from 1 through 12 {
+  .pa-#{$i} {
+    padding: $i * $spacer;
+  }
+
+  .px-#{$i} {
+    padding-left: $i * $spacer;
+    padding-right: $i * $spacer;
+  }
+
+  .py-#{$i} {
+    padding-top: $i * $spacer;
+    padding-bottom: $i * $spacer;
+  }
+
+}
+
+

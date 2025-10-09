@@ -65,8 +65,9 @@ const assignDefaultValues = <T extends HTMLElement>(obj: T, props?: Record<strin
 
 const defineElementWithOptions = <
   Name extends ValidCustomElementName,
+  UseShadowRoot extends boolean,
   Properties extends Record<string, DefinePropertyDeclaration>,
-  Styles extends CSSResultGroup,
+  Styles extends UseShadowRoot extends true | undefined ? CSSResultGroup : never,
   Parent extends typeof LitElement,
   Instance extends InstanceType<Parent> & UnwrapProps<Properties>,
   Render extends (this: Instance) => unknown,
@@ -78,7 +79,7 @@ const defineElementWithOptions = <
   props?: Properties
 
   register?: boolean
-  shadowRoot?: boolean
+  shadowRoot?: UseShadowRoot
 
   setup?: Setup
   render?: Render
@@ -127,8 +128,9 @@ const defineFunctionalComponent = (name: ValidCustomElementName, render: () => u
 export function defineElement(name: ValidCustomElementName, render: () => unknown): typeof LitElement
 export function defineElement<
   Name extends ValidCustomElementName,
+  UseShadowRoot extends boolean,
   Properties extends Record<string, DefinePropertyDeclaration>,
-  Styles extends CSSResultGroup,
+  Styles extends UseShadowRoot extends true | undefined ? CSSResultGroup : undefined,
   Parent extends typeof LitElement,
   Instance extends InstanceType<Parent> & UnwrapProps<Properties>,
   Render extends (this: Instance) => unknown,
@@ -139,7 +141,7 @@ export function defineElement<
   styles?: Styles
   props?: Properties
   register?: boolean
-  shadowRoot?: boolean
+  shadowRoot?: UseShadowRoot
   setup?: Setup
   render?: Render
 }): typeof LitElement

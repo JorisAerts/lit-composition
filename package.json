@@ -32,12 +32,13 @@
     "test": "pnpm test:unit --run && pnpm cy:run",
     "test:unit": "vitest",
     "cy:open": "cypress open",
-    "cy:run": "cypress run --component"
+    "cy:run": "cypress run --component",
+    "site:build": "cd site && vite build"
   },
   "devDependencies": {
     "@eslint/js": "^9.37.0",
     "@lit/context": "^1.1.6",
-    "@microsoft/api-extractor": "^7.53.0",
+    "@microsoft/api-extractor": "^7.53.1",
     "@stylistic/eslint-plugin": "^5.4.0",
     "@tsconfig/node24": "^24.0.1",
     "@types/node": "^24.7.0",
@@ -63,6 +64,11 @@
     "@lit/context": {
       "optional": true
     }
+  },
+  "module": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./context": "./src/context/context.ts"
   },
   "packageManager": "pnpm@10.18.1+sha512.77a884a165cbba2d8d1c19e3b4880eee6d2fcabd0d879121e282196b80042351d5eb3ca0935fa599da1dc51265cc68816ad2bddd2a2de5ea9fdf92adbec7cd34"
 }

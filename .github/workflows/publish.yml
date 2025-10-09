@@ -31,13 +31,13 @@ jobs:
       - name: Enable Corepack
         run: corepack enable
 
-      - name: Install deps
+      - name: Install dependencies
         run: pnpm install
 
-      - name: Tests
+      - name: Run tests
         run: pnpm test
 
-      - name: Dist
+      - name: Create package
         run: pnpm dist
 
       - name: Publish package to npm
