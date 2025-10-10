@@ -108,6 +108,8 @@ describe('defineElement', () => {
     it('styles should not be applied when no ShadowRoot', () => {
       defineElement({
         name: 'test-styles-2',
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
         styles: css`
           div {
             font-size: 32px;
@@ -115,6 +117,7 @@ describe('defineElement', () => {
             color: rgb(255, 215, 0);
           }
         `,
+        shadowRoot: false,
         setup() {
           return () => html`<div>Gold! 🥇</div>`
         },

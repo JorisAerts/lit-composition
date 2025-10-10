@@ -6,6 +6,7 @@ import { isFunction, isString, isSubclassOf, isUndefined } from '../utils/is'
 import { registerCustomElement } from '../utils/browser'
 import { SignalWatcher } from '@lit-labs/signals'
 import { withHooks } from './hooks'
+import { withCurrentInstance } from '../currentInstance'
 
 export type UnwrapProps<Props extends Record<string, DefinePropertyDeclaration>> = {
   [K in keyof Props]: InferPropType<Props[K]>
@@ -103,15 +104,17 @@ const defineElementWithOptions = <
 
     constructor() {
       super()
-      assignDefaultValues(this, options.props)
-      const setupResult = options.setup?.call(this as unknown as Instance, this as unknown as Instance)
-      this.__opts.render = isFunction(setupResult) //
-        ? setupResult
-        : (options.render ?? super.render.bind(this) ?? dummyFn)
+      withCurrentInstance(this, () => {
+        assignDefaultValues(this, options.props)
+        const setupResult = options.setup?.call(this as unknown as Instance, this as unknown as Instance)
+        this.__opts.render = isFunction(setupResult) //
+          ? setupResult
+          : (options.render ?? super.render.bind(this) ?? dummyFn)
+      })
     }
 
     render() {
-      return this.__opts.render?.call(this)
+      return withCurrentInstance(this, () => this.__opts.render?.call(this))
     }
   }
 
