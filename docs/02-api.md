@@ -53,13 +53,15 @@ Defaults declared in `props` via `default` are assigned before `setup()` runs.
 ## Interoperability notes
 
 - If you need a class without registering it immediately, omit the `name` or pass `register: false` in the options.
-- `takeRef` in `src/reactivity/takeRef` allows classic `LitElement` classes to subscribe to `useRef`/`computed` refs.
+Classic `LitElement` classes can subscribe to signals by creating an `effect` and calling `requestUpdate()` when
+signals change. `defineElement()` instances already integrate with the `@lib-labs/signals` runtime, so most use-cases
+don't need manual wiring.
 
 ## Files to inspect for behavior
 
 - `src/defineElement/defineElement.ts` — main implementation (constructor semantics, defaults, render wiring)
 - `src/defineElement/hooks.ts` — hook registration and mapping to Lit lifecycle
-- `src/reactivity/*` — ref/computed/watch helpers
+-- `@lib-labs/signals` — recommended primitives (signal, computed, effect). See `docs/04-reactivity.md` for guidance.
 
 ## Examples
 

@@ -22,7 +22,7 @@ It requires no decorators and allows developers to write approved standardized J
 - TypeScript-first, but works in plain JS
 - Lit-compatible props with optional defaults
 - Composable lifecycle hooks (onConnected, onUpdated, …)
-- Reactive state with useRef and derived values with computed
+- Reactive state with signals (`signal`, `computed`, `effect`) from `@lib-labs/signals`
 - Two ways to render: return a function from setup(), or provide render()
 - Fast shorthand: defineElement('my-tag', () => html`...`)
 - Shadow DOM control via shadowRoot: false
@@ -267,188 +267,91 @@ defineElement({
 })
 ```
 
-## Refs and computed
+## Signals (recommended)
 
-Maintain small reactive bits of state that integrate with Lit updates without needing @state or @property. Use
-`useRef()` for a mutable reactive value and `computed()` for derived values.
+lit-composition embraces fine-grained signals from `@lib-labs/signals` for local and shared reactive state. The
+class returned by `defineElement()` integrates with the signal runtime (it extends SignalWatcher), so any signals you
+read in `setup()` or the render will keep the component in sync automatically.
 
 ```ts
-import {defineElement, useRef, computed} from 'lit-composition'
+import {defineElement} from 'lit-composition'
 import {html} from 'lit'
+import {signal, computed} from '@lib-labs/signals'
 
 defineElement({
     name: 'with-refs',
     shadowRoot: false,
     setup() {
-        const count = useRef(0)
+        const count = signal(0)
         const doubled = computed(() => count.value * 2)
         return () => html`<button @click=${() => count.value++}>${count.value} → ${doubled.value}</button>`
     },
 })
 ```
 
-- `useRef(initial)` returns an object with a `.value` that triggers re-render on change.
-- `computed(getter | {get, set})` creates a read-only or writable derived ref; it re-computes when any of its
-  dependencies change.
-
-You can also create refs outside a component and share them across multiple components. A ref is just a tiny reactive
-container; it is not tied to any specific element instance. Any component that reads a shared ref will update when that
-ref changes.
+Signals work at module scope too so you can share tiny state between components:
 
 ```ts
-import {defineElement, useRef, computed} from 'lit-composition'
-import {html} from 'lit'
+import {signal, computed} from '@lib-labs/signals'
 
-// Module-scoped shared ref
-export const sharedCount = useRef(0)
-
-defineElement({
-    name: 'counter-a',
-    shadowRoot: false,
-    setup() {
-        const doubled = computed(() => sharedCount.value * 2)
-        return () => html`<button @click=${() => sharedCount.value++}>A: ${sharedCount.value} → ${doubled.value}</button>`
-    },
-})
-
-defineElement({
-    name: 'counter-b',
-    shadowRoot: false,
-    setup() {
-        return () => html`B sees: ${sharedCount.value}`
-    },
-})
+export const sharedCount = signal(0)
+export const doubled = computed(() => sharedCount.value * 2)
 ```
 
-### takeRef — use refs from "regular" Lit elements
+### Classic LitElement interop
 
-`takeRef` is a small utility that lets you attach an existing `useRef()` or `computed()` ref to a plain `LitElement`
-instance so that the element will subscribe to updates from that ref and request updates when the ref changes.
+Classic `LitElement` classes don't automatically participate in the `defineElement()` setup lifecycle. If you need
+to subscribe a classic element to signals, create an `effect` in the element lifecycle and call `requestUpdate()` as
+needed. In practice, most uses don't need manual wiring because `defineElement()` instances already integrate with the
+signal runtime.
 
-Why this exists
-
-- `useRef()` and `computed()` return lightweight reactive containers that integrate with lit-composition's
-  reactivity system. Components created with `defineElement()` automatically pick up refs that are read during their
-  render/setup lifecycle. Classic `LitElement` classes don't participate in that setup lifecycle, so `takeRef` lets you
-  manually register a `LitElement` instance as a subscriber for an existing ref.
-
-API
-
-- takeRef(element: ReactiveElement, ref: Effect<T>) => Effect<T>
-
-Notes
-
-- `takeRef` does not clone the ref — it returns the same ref you pass in. It simply registers the provided `element`
-  as a subscriber so that when the ref changes the element's `requestUpdate()` is called.
-- Works with both `useRef()` and `computed()`.
-
-Examples
-
-1) Using a shared `useRef` inside a classic `LitElement`:
+Example: manual signal binding in a classic LitElement
 
 ```ts
 import {LitElement, html} from 'lit'
-import {useRef, takeRef} from 'lit-composition'
+import {signal, effect} from '@lib-labs/signals'
 
-const shared = useRef(123)
+const shared = signal(123)
 
 class MyClassic extends LitElement {
-    static properties = {ref: {type: Object}}
+    connectedCallback() {
+        super.connectedCallback()
+        // subscribe and request update on changes
+        this._stop = effect(() => {
+            // read to track dependency
+            void shared.value
+            this.requestUpdate()
+        })
+    }
 
-    constructor() {
-        super()
-        // register this element to receive updates when `shared` changes
-        this.ref = takeRef(this, shared)
+    disconnectedCallback() {
+        this._stop?.()
+        super.disconnectedCallback()
     }
 
     render() {
-        return html`<div>${this.ref.value}</div>`
+        return html`<div>${shared.value}</div>`
     }
 }
 
 customElements.define('my-classic', MyClassic)
 ```
 
-2) Attaching a computed ref to a classic `LitElement`:
+## Effects
+
+Use `effect` from `@lib-labs/signals` to run side effects when signals change. It is similar in purpose to `watch` but
+fits the signals model directly. Return a cleanup function to unsubscribe.
 
 ```ts
-import {LitElement, html} from 'lit'
-import {computed, takeRef} from 'lit-composition'
+import {effect} from '@lib-labs/signals'
 
-const comp = computed(() => 42)
-
-class CompClassic extends LitElement {
-    static properties = {ref: {type: Object}}
-
-    constructor() {
-        super()
-        this.ref = takeRef(this, comp)
-    }
-
-    render() {
-        return html`<div>${this.ref.value}</div>`
-    }
-}
-
-customElements.define('comp-classic', CompClassic)
-```
-
-3) When using `defineElement()` you usually don't need `takeRef` because the setup/render lifecycle will subscribe
-   automatically when you read refs. `takeRef` is intended for interoperability with non-defineElement consumers.
-
-## Watching reactive state with `watch`
-
-The `watch` function lets you run a callback when one or more refs or computed values change, similar to Vue's `watch`.
-It is useful for responding to changes in state, performing side effects, or synchronizing with external systems.
-
-**Usage:**
-
-- `watch(refOrGetter, (newVal, oldVal) => { ... })`
-- `watch([ref1, getter2], ([new1, new2], [old1, old2]) => { ... })`
-
-The callback receives the new and previous value(s). The watcher runs only when the value(s) change. By default, the
-callback is not called immediately on setup, but you can pass `{ immediate: true }` as a third argument to run it once
-with the current value(s).
-
-**Examples:**
-
-```ts
-import {defineElement, useRef, watch} from 'lit-composition'
-import {html} from 'lit'
-
-defineElement({
-    name: 'my-watcher',
-    setup() {
-        const count = useRef(0)
-        const label = useRef('')
-
-        // Watch a single ref
-        watch(count, (newVal, oldVal) => {
-            console.log('Count changed from', oldVal, 'to', newVal)
-        })
-
-        // Watch multiple sources
-        watch([count, label], ([newCount, newLabel], [oldCount, oldLabel]) => {
-            console.log('Count or label changed:', {newCount, newLabel, oldCount, oldLabel})
-        })
-
-        // Watch with immediate option
-        watch(count, (newVal) => {
-            console.log('Immediate count:', newVal)
-        }, {immediate: true})
-
-        return () => html`
-            <button @click=${() => count.value++}>Inc: ${count.value}</button>
-            <input .value=${label.value} @input=${e => label.value = e.target.value} />
-        `
-    },
+// inside setup() or a lifecycle hook
+effect(() => {
+  // read signal.value to track dependency
+  console.log('value changed')
+  return () => { /* cleanup */ }
 })
 ```
-
-**Notes:**
-
-- You can watch refs, computed values, or getter functions.
-- The stop function returned by `watch` can be called to stop watching.
 
 ## Side effects with `watchEffect`
 

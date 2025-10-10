@@ -60,4 +60,4 @@ pnpm dev
 
 - `docs/02-api.md` — reference for `defineElement` options and examples
 - `docs/03-hooks.md` — lifecycle hooks and usage patterns
-- `docs/04-reactivity.md` — `useRef`, `computed`, `watch`, and `takeRef`
+- `docs/04-reactivity.md` — Signals guide (`signal`, `computed`, `effect`) and examples

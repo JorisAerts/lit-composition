@@ -6,10 +6,11 @@ DX compared to plain Lit classes.
 ## 1) Shared state without a store
 
 ```ts
-import {defineElement, useRef, computed} from 'lit-composition'
+import {defineElement} from 'lit-composition'
 import {html} from 'lit'
+import {signal, computed} from '@lib-labs/signals'
 
-const shared = useRef(0)
+const shared = signal(0)
 
 defineElement({ name: 'a-counter', setup() {
   const doubled = computed(() => shared.value * 2)
