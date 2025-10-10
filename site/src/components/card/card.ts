@@ -11,11 +11,14 @@ defineElement({
     unsafeCSS(cssHelpers),
     css`
       div {
-        background: rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.05);
         border-radius: 6px;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-
         padding: 8px;
+      }
+
+      ::slotted(h2) {
+        margin: 0;
+        font-size: medium;
       }
     `,
   ],

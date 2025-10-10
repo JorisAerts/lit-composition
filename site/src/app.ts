@@ -3,8 +3,7 @@ import { defineElement } from 'lit-composition'
 import './components/navigation/nav'
 import { routes } from './router'
 import { Router } from '@lit-labs/router'
-
-import cssHelpers from './style/helpers.scss?inline'
+import cssTheme from './style/theme.scss?inline'
 import cssPage from './style/page.scss?inline'
 
 import './components/layout'
@@ -12,8 +11,8 @@ import './components/layout'
 defineElement({
   name: 'lc-app',
   styles: [
-    unsafeCSS(cssHelpers),
     unsafeCSS(cssPage),
+    unsafeCSS(cssTheme),
     css`
       :host {
         width: 100%;
