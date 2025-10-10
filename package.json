@@ -41,7 +41,7 @@
     "@microsoft/api-extractor": "^7.53.1",
     "@stylistic/eslint-plugin": "^5.4.0",
     "@tsconfig/node24": "^24.0.1",
-    "@types/node": "^24.7.0",
+    "@types/node": "^24.7.1",
     "cypress": "^15.4.0",
     "cypress-ct-lit": "^1.0.0",
     "eslint": "^9.37.0",
@@ -70,5 +70,5 @@
     ".": "./src/index.ts",
     "./context": "./src/context/context.ts"
   },
-  "packageManager": "pnpm@10.18.1+sha512.77a884a165cbba2d8d1c19e3b4880eee6d2fcabd0d879121e282196b80042351d5eb3ca0935fa599da1dc51265cc68816ad2bddd2a2de5ea9fdf92adbec7cd34"
+  "packageManager": "pnpm@10.18.2+sha512.9fb969fa749b3ade6035e0f109f0b8a60b5d08a1a87fdf72e337da90dcc93336e2280ca4e44f2358a649b83c17959e9993e777c2080879f3801e6f0d999ad3dd"
 }
