@@ -62,6 +62,7 @@ defineElement({
               <li><a href="${links.PropsAndDefaults}">Props &amp; defaults</a></li>
               <li><a href="${links.ShadowDom}">Shadow DOM vs Light DOM</a></li>
               <li><a href="${links.ContextProviders}">Context</a></li>
+              <li><a href="${links.Examples}">Examples</a></li>
               <li><a href="${links.Contributing}">Contributing</a></li>
             </ul>
           </aside>
