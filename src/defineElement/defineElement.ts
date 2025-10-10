@@ -1,11 +1,11 @@
-import type { CSSResultGroup, PropertyDeclaration } from 'lit'
+import type { CSSResultGroup, PropertyDeclaration, ReactiveElement } from 'lit'
 import { LitElement } from 'lit'
 import { dummyFn } from '../utils/dummyFn'
 import type { ValidCustomElementName } from '../utils/types'
-import { isFunction, isString, isUndefined } from '../utils/is'
-import { withCurrentInstance } from '../currentInstance'
-import { withHooks } from './hooks'
+import { isFunction, isString, isSubclassOf, isUndefined } from '../utils/is'
 import { registerCustomElement } from '../utils/browser'
+import { SignalWatcher } from '@lit-labs/signals'
+import { withHooks } from './hooks'
 
 export type UnwrapProps<Props extends Record<string, DefinePropertyDeclaration>> = {
   [K in keyof Props]: InferPropType<Props[K]>
@@ -24,11 +24,11 @@ type InferPropType<T, NullAsAny = true> = [T] extends [null]
     ? unknown
     : [T] extends [DefinePropertyDeclaration<unknown, ObjectConstructor>]
       ? Record<string, unknown>
-      : [T] extends [BooleanConstructor | DefinePropertyDeclaration<unknown, BooleanConstructor>]
+      : [T] extends [DefinePropertyDeclaration<unknown, BooleanConstructor>]
         ? boolean
-        : [T] extends [DateConstructor | DefinePropertyDeclaration<unknown, DateConstructor>]
+        : [T] extends [DefinePropertyDeclaration<unknown, DateConstructor>]
           ? Date
-          : [T] extends [(infer U)[] | DefinePropertyDeclaration<unknown, (infer U)[]>]
+          : [T] extends [DefinePropertyDeclaration<unknown, (infer U)[]>]
             ? U extends DateConstructor
               ? Date | InferPropType<U, false>
               : InferPropType<U, false>
@@ -53,6 +53,8 @@ interface DefinePropertyDeclaration<Type = unknown, TypeHint = unknown> extends 
   readonly default?: TypeHint | (() => TypeHint)
 }
 
+type ReactiveElementConstructor = new (...args: any[]) => ReactiveElement
+
 const assignDefaultValues = <T extends HTMLElement>(obj: T, props?: Record<string, DefinePropertyDeclaration>) =>
   props &&
   Object.entries(props).forEach(([key, prop]: [unknown, DefinePropertyDeclaration]) => {
@@ -60,6 +62,9 @@ const assignDefaultValues = <T extends HTMLElement>(obj: T, props?: Record<strin
     const value = (isFunction(prop.default) ? prop.default.call(null) : prop.default) as T[keyof T]
     obj[key as keyof T] ??= value
   })
+
+const withSignals = (superClass: ReactiveElementConstructor) =>
+  isSubclassOf(superClass, SignalWatcher) ? superClass : SignalWatcher(superClass)
 
 // END-OF-HOOKS
 
@@ -86,7 +91,7 @@ const defineElementWithOptions = <
 }): typeof LitElement => {
   options = Object.create(options) as typeof options
   const { name, parent: BaseClass = LitElement, register } = options
-  const SuperClass = withHooks(BaseClass)
+  const SuperClass = withHooks(withSignals(BaseClass) as typeof LitElement)
 
   const result = class extends SuperClass {
     static properties = options.props ?? ({} as Properties)
@@ -98,17 +103,15 @@ const defineElementWithOptions = <
 
     constructor() {
       super()
-      withCurrentInstance(this, () => {
-        assignDefaultValues(this, options.props)
-        const setupResult = options.setup?.call(this as unknown as Instance, this as unknown as Instance)
-        this.__opts.render = isFunction(setupResult) //
-          ? setupResult
-          : (options.render ?? super.render.bind(this) ?? dummyFn)
-      })
+      assignDefaultValues(this, options.props)
+      const setupResult = options.setup?.call(this as unknown as Instance, this as unknown as Instance)
+      this.__opts.render = isFunction(setupResult) //
+        ? setupResult
+        : (options.render ?? super.render.bind(this) ?? dummyFn)
     }
 
     render() {
-      return withCurrentInstance(this, () => this.__opts.render?.call(this))
+      return this.__opts.render?.call(this)
     }
   }
 
@@ -122,8 +125,16 @@ const defineElementWithOptions = <
 export type DefinedComponent = ReturnType<typeof defineElement>
 export type DefinedComponentInstance = InstanceType<DefinedComponent>
 
-const defineFunctionalComponent = (name: ValidCustomElementName, render: () => unknown) =>
-  defineElementWithOptions({ name, render, shadowRoot: false })
+const defineFunctionalComponent = <Name extends ValidCustomElementName>(
+  name: Name,
+  render: () => unknown,
+  opts = {} as {
+    [K in keyof Parameters<typeof defineElementWithOptions>[0]]: Parameters<typeof defineElementWithOptions>[0][K]
+  } & {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    styles: any
+  }
+) => defineElementWithOptions({ ...opts, name, render, shadowRoot: false })
 
 export function defineElement(name: ValidCustomElementName, render: () => unknown): typeof LitElement
 export function defineElement<

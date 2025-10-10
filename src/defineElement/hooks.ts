@@ -37,8 +37,8 @@ const fnSubscriber = <FN extends (...args: any[]) => unknown>() => {
 type FnSubscriber<T extends (...args: any[]) => unknown> = ReturnType<typeof fnSubscriber<T>>
 
 export const withHooks = <
-  Base extends abstract new (...args: any[]) => LitElement,
-  Result = abstract new () => LitElement &
+  Base extends new (...args: any[]) => LitElement,
+  Result = new () => LitElement &
     InstanceType<Base> & {
       __opts: InternalOptions<InstanceType<Base>>
     },
