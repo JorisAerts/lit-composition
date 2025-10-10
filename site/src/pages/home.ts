@@ -1,11 +1,10 @@
+import cssHelpers from '../style/helpers.scss?inline'
+import cssPage from '../style/page.scss?inline'
 import { html, unsafeCSS } from 'lit'
 import { defineElement } from 'lit-composition'
 import '../components/card'
-import cssHelpers from '../style/helpers.scss?inline'
-import cssPage from '../style/page.scss?inline'
 import cssHome from './home.scss?inline'
-
-import logoSvg from '../../../logo.svg' with { type: 'svg' }
+import { logo } from '../utils/logo'
 
 defineElement({
   name: 'lc-home',
@@ -18,7 +17,7 @@ defineElement({
         </div>
         <div class="logo-container" style="margin-right: 200px; align-self: center">
           <div class="logo-bg"></div>
-          <img src="${logoSvg}" />
+          <img src="${logo}" />
         </div>
       </div>
       <div class="d-flex gap-4 pa-4 justify-center cards-row mx-auto" style="width: 50%; position: relative">

@@ -1,8 +1,8 @@
 import { css, html, unsafeCSS } from 'lit'
 import { defineElement } from 'lit-composition'
 import cssHelpers from '../../style/helpers.scss?inline'
-import lcLogo from '../../../../logo.svg' with { type: 'svg' }
 import { links } from '../../router'
+import { logo } from '../../utils/logo'
 
 import '../layout'
 
@@ -57,7 +57,7 @@ defineElement({
         <lc-layout>
           <div class="slot-wrapper">
             <div class="d-flex gc-4 align-center">
-              <img height="40" src="${lcLogo}" class="logo" alt="Lit composition logo" />
+              <img height="40" src="${logo}" class="logo" alt="Lit composition logo" />
               <h1>Lit composition</h1>
             </div>
             <div style="align-self: stretch; flex-grow: 1;"></div>
