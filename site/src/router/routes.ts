@@ -8,7 +8,7 @@ import '../pages/docs'
 
 // Use Vite's BASE_URL (set via vite.config.ts) as the app base path
 export const links = {
-  Home: `${BASE_URL}`,
+  Home: `${BASE_URL}/`,
   GettingStarted: `${BASE_URL}/` + `getting-started`,
   API: `${BASE_URL}/` + `api`,
   Hooks: `${BASE_URL}/` + `hooks`,

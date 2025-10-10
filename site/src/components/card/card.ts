@@ -10,8 +10,8 @@ defineElement({
     unsafeCSS(cssPage),
     unsafeCSS(cssHelpers),
     css`
-      div {
-        background: rgba(255, 255, 255, 0.05);
+      :host {
+        background: hsla(from var(--background-color) h s calc(l - 1.3) / 1);
         border-radius: 6px;
         padding: 8px;
       }
@@ -23,6 +23,6 @@ defineElement({
     `,
   ],
   setup() {
-    return () => html`<div><slot></slot></div>`
+    return () => html`<slot></slot>`
   },
 })

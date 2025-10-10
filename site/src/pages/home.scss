@@ -1,5 +1,50 @@
 @use "../style/page.scss";
+@use "../style/theme.scss";
 
-:root {
-  
+:host {
+  --primary-color: rgb(0, 232, 255);
+  --secondary-color: rgb(77, 99, 255);
+  --logo-height: 200px;
+  --logo-bg-width: calc(var(--logo-height) * 1.4);
+  --color-gradient: linear-gradient(90deg, var(--primary-color) 30%, var(--secondary-color) 80%);
+
+  display: block;
+  width: 100%;
 }
+
+.logo-container {
+
+  position: relative;
+  height: var(--logo-height);
+  width: var(--logo-bg-width);
+  justify-content: end;
+
+  .logo-bg {
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 50%;
+    width: var(--logo-bg-width);
+    height: var(--logo-height);
+    top: 0;
+    left: 0;
+    background: var(--color-gradient);
+    filter: blur(calc(var(--logo-height) / (2 * pi)));
+    opacity: 0.65;
+  }
+
+  img {
+    position: absolute;
+    height: var(--logo-height);
+  }
+}
+
+.cards-row {
+  display: flex;
+  align-items: stretch;
+
+  & > lc-card {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+}
+
