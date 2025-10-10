@@ -115,7 +115,6 @@ describe('defineElement', () => {
             color: rgb(255, 215, 0);
           }
         `,
-        shadowRoot: false,
         setup() {
           return () => html`<div>Gold! 🥇</div>`
         },

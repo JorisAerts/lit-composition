@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { html, LitElement } from 'lit'
-import { defineElement } from '../../src/defineElement/defineElement'
+import { defineElement } from '../../src'
 
 describe('defineElement', () => {
   it('Test component is a LitElement', () => {
