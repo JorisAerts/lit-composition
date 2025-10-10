@@ -14,8 +14,6 @@ defineElement({
     unsafeCSS(cssHelpers),
     css`
       :host {
-        --side-bar-width: 300px;
-        --nav-bar-height: 80px;
         width: 100%;
       }
 
@@ -41,8 +39,7 @@ defineElement({
         }
       }
       main {
-        margin: var(--nav-bar-height) 0 0 var(--side-bar-width);
-        max-width: calc(1280px - var(--side-bar-width));
+        margin-left: var(--side-bar-width);
       }
     `,
   ],
@@ -60,6 +57,7 @@ defineElement({
           <li><a href="${links.PropsAndDefaults}">Props &amp; defaults</a></li>
           <li><a href="${links.ShadowDom}">Shadow DOM vs Light DOM</a></li>
           <li><a href="${links.ContextProviders}">Context</a></li>
+          <li><a href="${links.Examples}">Examples</a></li>
           <li><a href="${links.Contributing}">Contributing</a></li>
         </ul>
       </aside>

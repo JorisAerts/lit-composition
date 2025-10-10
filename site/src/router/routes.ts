@@ -21,7 +21,6 @@ export const links = {
 
 export const routes: RouteConfig[] = [
   //
-  { path: `/**/${links.Home}`, render: () => html`<lc-home></lc-home>` },
   { path: `/**/${links.GettingStarted}`, render: () => html`<lc-docs .value="${md.mdGettingStarted}"></lc-md>` },
   { path: `/**/${links.API}`, render: () => html`<lc-docs .value="${md.mdApi}"></lc-md>` },
   { path: `/**/${links.Hooks}`, render: () => html`<lc-docs .value="${md.mdHooks}"></lc-md>` },
@@ -31,4 +30,5 @@ export const routes: RouteConfig[] = [
   { path: `/**/${links.ContextProviders}`, render: () => html`<lc-docs .value="${md.mdContextProviders}"></lc-md>` },
   { path: `/**/${links.Examples}`, render: () => html`<lc-docs .value="${md.mdExamples}"></lc-md>` },
   { path: `/**/${links.Contributing}`, render: () => html`<lc-docs .value="${md.mdContributing}"></lc-md>` },
+  { path: `/**${links.Home}`, render: () => html`<lc-home></lc-home>` },
 ]

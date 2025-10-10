@@ -7,6 +7,8 @@ import { Router } from '@lit-labs/router'
 import cssHelpers from './style/helpers.scss?inline'
 import cssPage from './style/page.scss?inline'
 
+import './components/layout'
+
 defineElement({
   name: 'lc-app',
   styles: [
@@ -14,7 +16,6 @@ defineElement({
     unsafeCSS(cssPage),
     css`
       :host {
-        --nav-bar-height: 80px;
         width: 100%;
       }
       .main {
@@ -27,7 +28,9 @@ defineElement({
     return () =>
       html`<div>
         <app-nav></app-nav>
-        <div class="main d-flex" style="max-height: 100%">${router.outlet()}</div>
+        <lc-layout>
+          <div class="main d-flex" style="max-height: 100%">${router.outlet()}</div>
+        </lc-layout>
       </div>`
   },
 })
