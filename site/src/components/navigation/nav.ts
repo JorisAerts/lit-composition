@@ -61,7 +61,7 @@ defineElement({
               <h1>Lit composition</h1>
             </div>
             <div style="align-self: stretch; flex-grow: 1;"></div>
-            <a class="pa-4" href="/lit-composition">Home</a>
+            <a class="pa-4" href="${links.Home}">Home</a>
             <a class="pa-4" href="${links.GettingStarted}">Documentation</a>
             <a class="pa-4" href="https://github.com/JorisAerts/lit-composition">
               <svg

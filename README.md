@@ -117,6 +117,8 @@ import {html} from 'lit'
 defineElement('my-hello', () => html`Hello, World!`)
 ```
 
+Both of the above calls return a class that extends LitElement.
+
 ## Usage
 
 - defineElement(options) — object form. You can declare props, styles, and optionally a setup() that returns a render
@@ -169,17 +171,22 @@ defineElement({
 })
 ```
 
+Elements created with defineElement() are LitElements under the hood and can be used together with other Lit elements.
+Using old school Lit elements with lit-composition reactivity, is provided through functionality that enables
+subscriptions to reactive state and side effects.
+
 ## Lifecycle hooks
 
-Hooks map 1:1 to Lit lifecycle methods:
+In the setup function, you can use the following hooks to manage the lifecycle of the component.
+These hooks map 1:1 to Lit lifecycle methods:
 
-- onConnected(cb) → connectedCallback
-- onDisconnected(cb) → disconnectedCallback
-- onWillUpdate(cb) → willUpdate
-- onPerformUpdate(cb) → performUpdate
-- onFirstUpdated(cb) → firstUpdated
-- onUpdated(cb) → updated
-- onUpdate(cb) → update
+- `onConnected(cb)` → `connectedCallback`
+- `onDisconnected(cb)` → `disconnectedCallback`
+- `onWillUpdate(cb)` → `willUpdate`
+- `onPerformUpdate(cb)` → `performUpdate`
+- `onFirstUpdated(cb)` → `firstUpdated`
+- `onUpdated(cb)` → `updated`
+- `onUpdate(cb)` → `update`
 
 Example:
 
