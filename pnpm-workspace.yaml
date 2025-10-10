@@ -1,6 +1,9 @@
+packages:
+  - site
+
+ignoredBuiltDependencies:
+  - '@parcel/watcher'
+
 onlyBuiltDependencies:
   - cypress
   - esbuild
-
-packages:
-  - site
