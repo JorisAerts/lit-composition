@@ -3,6 +3,8 @@ import { defineElement } from '../../src/signals'
 import { computed, signal } from '@lit-labs/signals'
 
 describe('signals integration', () => {
+  console.log(signal(0))
+
   describe('local signal (per instance)', () => {
     it('rerenders when a local signal changes', () => {
       defineElement({
