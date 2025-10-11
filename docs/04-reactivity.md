@@ -1,9 +1,10 @@
 # Reactivity — Signals (using @lit-labs/signals)
 
 lit-composition no longer ships a custom reactive primitive. Instead it embraces fine-grained signals from
-`@lit-labs/signals`. The library's element base integrates with that system: the class returned by
-`defineElement()` extends SignalWatcher, so any signals you read in `setup()` or your render automatically keep the
-component in sync.
+`@lit-labs/signals`. To integrate signals automatically, use the signals-enabled entry point:
+`import {defineElement} from 'lit-composition/signals'`. The class returned by that `defineElement()` extends
+SignalWatcher, so any signals you read in `setup()` or your render automatically keep the component in sync.
+(If you import from the root, `lit-composition`, signals are not wired by default.)
 
 This approach gives you a fully-featured reactivity story without extra ceremony: signals provide local and shared
 state, computed values, and watch-based side effects. Because `defineElement()` integrates with the SignalWatcher, migrating is usually
@@ -42,7 +43,7 @@ Edge cases to watch
 1.  Local signal inside a component (small change to your component)
 
     ```ts
-    import {defineElement} from 'lit-composition'
+    import {defineElement} from 'lit-composition/signals'
     import {html} from 'lit'
     import {signal} from '@lit-labs/signals'
 
@@ -63,7 +64,7 @@ Edge cases to watch
 2.  Shared signals (module-scoped store)
 
     ```ts
-    import {defineElement} from 'lit-composition'
+    import {defineElement} from 'lit-composition/signals'
     import {html} from 'lit'
     import {signal, computed} from '@lit-labs/signals'
 
@@ -90,7 +91,7 @@ Edge cases to watch
 3.  Computed, derived data and watching
 
     ```ts
-    import {defineElement} from 'lit-composition'
+    import {defineElement} from 'lit-composition/signals'
     import {html} from 'lit'
     import {signal, computed, watch} from '@lit-labs/signals'
 

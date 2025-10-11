@@ -42,9 +42,11 @@ It requires no decorators and allows developers to write approved standardized J
 
 ## Installation
 
-Peer requirements: lit >=3 (required), @lit-labs/signals >= 0.1.3 (required), @lit/context >=1 (optional, only if you
-use context helpers).  
-The requirement on @lit-labs/signals is to wire signals into the returned Lit element.
+Peer requirements: lit >=3 (required).
+Optional peers:
+
+- @lit-labs/signals >= 0.1.3 (optional, when using Signals)
+- @lit/context >=1 (optional, when using context helpers).
 
 ```bash
 pnpm add lit lit-composition
@@ -54,7 +56,9 @@ npm i lit lit-composition
 yarn add lit lit-composition
 ```
 
-If you want signals support:
+Signals support is provided via a separate entry point `'lit-composition/signals'` that wires SignalWatcher into
+the returned Lit element.
+You'll first need to add a Lit dependency for signals:
 
 ```bash
 pnpm add @lit-labs/signals
@@ -62,8 +66,11 @@ pnpm add @lit-labs/signals
 npm i @lit-labs/signals
 # or
 yarn add @lit-labs/signals
+```
 
-If you want to use provide / consume:
+Provide and consume support is also provided via a separate entry point `'lit-composition/context'` that
+provides a set of helpers to provide and consume context.
+As with signals, you'll first need to add a Lit dependency for context:
 
 ```bash
 pnpm add @lit/context
@@ -80,8 +87,8 @@ yarn add @lit/context
   emitDecoratorMetadata.
 - Bundlers: Package is pure ESM with standard exports. Works out-of-the-box with Vite, Rollup, and Webpack 5+. No
   special plugins or config needed.
-- Import paths: Most APIs come from 'lit-composition'. Context helpers live under the subpath '
-  lit-composition/context' (see examples below).
+- Import paths: Most APIs come from 'lit-composition'. The signals-enabled variant of defineElement is available from '
+  lit-composition/signals'. Context helpers live under the subpath 'lit-composition/context' (see examples below).
 - Peer deps: Install lit@^3. If you use context helpers, also install @lit/context.
 - Runtime support: Modern evergreen browsers (Chromium, Firefox, Safari). For tooling scripts (not the browser), Node
   18+ is recommended.
@@ -325,11 +332,11 @@ defineElement({
 
 ## Side effects with `watch`
 
-Use `watch` from `@lit-labs/signals` when you need to run side effects in response to signal changes. You can safely
-use it inside `setup()` and clean up automatically on disconnect.
+Use `watch` from `@lit-labs/signals` to run side effects in response to signal changes. Call it inside `setup()`; it
+registers an effect that is automatically cleaned up when the component disconnects.
 
 ```ts
-import {defineElement} from 'lit-composition'
+import {defineElement} from 'lit-composition/signals'
 import {html} from 'lit'
 import {signal, computed, watch} from '@lit-labs/signals'
 
@@ -340,8 +347,12 @@ defineElement({
         const count = signal(0)
         const doubled = computed(() => count.get() * 2)
 
-        return () => html`<button @click=
-            ${() => count.set(count.get() + 1)}>${watch(count)} → ${watch(doubled)}</button>`
+        // Run a side effect whenever `doubled` changes
+        watch(() => {
+            console.log('doubled is now', doubled.get())
+        })
+
+        return () => html`<button @click=${() => count.set(count.get() + 1)}>${count.get()} → ${doubled.get()}</button>`
     },
 })
 ```

@@ -13,10 +13,26 @@ pnpm add lit lit-composition
 npm i lit lit-composition
 ```
 
-If you plan to use signals (recommended) also install `@lit-labs/signals`:
+If you plan to use signals (recommended) also install `@lit-labs/signals` and import the signals-enabled entry point:
 
 ```bash
 pnpm add @lit-labs/signals
+```
+
+Then import from the signals entry point when defining elements that should react to signals:
+
+```ts
+import {defineElement} from 'lit-composition/signals'
+import {html} from 'lit'
+import {signal} from '@lit-labs/signals'
+
+defineElement({
+  name: 'hello-signals',
+  setup() {
+    const count = signal(0)
+    return () => html`<button @click=${() => count.set(count.get() + 1)}>${count.get()}</button>`
+  },
+})
 ```
 
 If you plan to use context helpers (provide/consume) also install `@lit/context`:
