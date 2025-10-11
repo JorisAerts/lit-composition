@@ -16,6 +16,10 @@ It requires no decorators and allows developers to write approved standardized J
 - Typed, object-based options instead of decorators.
 - Composable lifecycle hooks you can call from plain functions.
 - Standard JS/TS: works in TypeScript and plain JavaScript without experimental flags.
+- It's a new concept for creating Lit Web Components, which provides flexibility and control over the
+  component lifecycle during the construction phase.  
+  With the use of [Signals](https://lit.dev/docs/data/signals/),
+  it's possible to share a central state between multiple components and introduce **composition**.
 
 ## Features
 
@@ -26,27 +30,19 @@ It requires no decorators and allows developers to write approved standardized J
 - Fast shorthand: defineElement('my-tag', () => html`...`)
 - Shadow DOM control via shadowRoot: false
 - Real LitElement subclass under the hood
-
-## Table of contents
-
-- Installation
-- Setup
-- Quick start
-- Usage
-- No decorators required
-- Lifecycle hooks
-- Props and default values
-- Shadow DOM control
-- Context: provide & consume
-- Options reference
+- Basic tag-name validation. For example, 'annotion-xml' is not allowed as a name.
+- No dependencies, No decorators, No experimental flags, No special tooling, No special bundler config, No special
+  runtime config
 
 ## Installation
 
-Peer requirements: lit >=3 (required).
-Optional peers:
+Peer requirements:
 
-- @lit-labs/signals >= 0.1.3 (optional, when using Signals)
-- @lit/context >=1 (optional, when using context helpers).
+- `lit >=3` (**required**).
+- `@lit-labs/signals >= 0.1.3` (**optional**, when using Signals)
+- `@lit/context >=1` (**optional**, when using context helpers).
+
+Install the using your favorite package manager:
 
 ```bash
 pnpm add lit lit-composition
@@ -55,6 +51,8 @@ npm i lit lit-composition
 # or
 yarn add lit lit-composition
 ```
+
+#### @lit-labs/signals
 
 Signals support is provided via a separate entry point `'lit-composition/signals'` that wires SignalWatcher into
 the returned Lit element.
@@ -67,6 +65,8 @@ npm i @lit-labs/signals
 # or
 yarn add @lit-labs/signals
 ```
+
+#### @lit/context
 
 Provide and consume support is also provided via a separate entry point `'lit-composition/context'` that
 provides a set of helpers to provide and consume context.
@@ -82,28 +82,21 @@ yarn add @lit/context
 
 ## Setup
 
-Besides adding the lit-composition pakcage to your project, no further setup is required.
+Just add the lit-composition package to your project.
+That's it, no further setup is required.   
+It is a zero dependency package, you'll have to bring your own Lit dependency,
+or you can use one from a CDN:
 
-- TypeScript: No experimental decorators required. Recommended tsconfig: target ES2020+ (or latest your environment
-  supports), module ES2020/ESNext, libs include DOM and ES2020. You do NOT need experimentalDecorators or
-  emitDecoratorMetadata.
-- Bundlers: Package is pure ESM with standard exports. Works out-of-the-box with Vite, Rollup, and Webpack 5+. No
-  special plugins or config needed.
-- Import paths: Most APIs come from 'lit-composition'. The signals-enabled variant of defineElement is available from '
-  lit-composition/signals'. Context helpers live under the subpath 'lit-composition/context' (see examples below).
-- Peer deps: Install lit@^3. If you use context helpers, also install @lit/context.
-- Runtime support: Modern evergreen browsers (Chromium, Firefox, Safari). For tooling scripts (not the browser), Node
-  18+ is recommended.
-- CDN (quick try):
-  ```html
-  <script type="module">
+```html
+
+<script type="module">
     import {defineElement} from 'https://unpkg.com/lit-composition/dist/index.js'
     import {html} from 'https://unpkg.com/lit@3/index.js'
 
     defineElement('hello-cdn', () => html`Hello from CDN`)
-  </script>
-  <hello-cdn></hello-cdn>
-  ```
+</script>
+<hello-cdn></hello-cdn>
+```
 
 ## Quick start
 
@@ -190,8 +183,7 @@ defineElement({
 ```
 
 Elements created with defineElement() are LitElements under the hood and can be used together with other Lit elements.
-Using old school Lit elements with lit-composition reactivity, is provided through functionality that enables
-subscriptions to reactive state and side effects.
+They just have a dedicated lifecycle that lives in the constructor phase, with hooks to manage the lifecycle.
 
 ## Lifecycle hooks
 
@@ -221,6 +213,8 @@ defineElement({
     },
 })
 ```
+
+**NOTE:** Using these lifecycle hooks in a regular LitElement **won't work**.
 
 ## Props and default values
 
@@ -262,7 +256,7 @@ defineElement({
 })
 ```
 
-Precedence notes:
+### Precedence notes:
 
 - Attributes/props passed by the user win over defaults.
 - Values you set in setup() also win; defaults only fill undefined.
@@ -299,7 +293,7 @@ export const doubled = computed(() => sharedCount.get() * 2)
 
 lit-composition embraces signals from `@lit-labs/signals` for local and shared reactive state.  
 A separate import is defined at 'lit-composition/signals' for importing `defineElement`.
-This class is just a version of `defineElement` is just a shorthand for
+This version of `defineElement` is just shorthand for:
 
 ```ts
 import {LitElement} from 'lit'
@@ -312,9 +306,8 @@ defineElement({
 })
 ```
 
-The class returned by that `defineElement()` extends SignalWatcher, so any signals you read in `
-setup()` or the render
-will keep the component in sync automatically.
+The class returned by that `defineElement()` extends SignalWatcher,
+so any signals you read in `setup()` or the render will keep the component in sync automatically.
 
 ```ts
 import {defineElement} from 'lit-composition/signals'
@@ -332,29 +325,28 @@ defineElement({
 })
 ```
 
-## Side effects with `watch`
-
-Use `watch` from `@lit-labs/signals` to run side effects in response to signal changes. Call it inside `setup()`; it
-registers an effect that is automatically cleaned up when the component disconnects.
+Signals can also be declared in another scope and shared between components:
 
 ```ts
 import {defineElement} from 'lit-composition/signals'
+import {signal, computed} from '@lit-labs/signals'
 import {html} from 'lit'
-import {signal, computed, watch} from '@lit-labs/signals'
+
+const sharedCount = signal(0)
 
 defineElement({
-    name: 'with-effect',
-    shadowRoot: false,
+    name: 'with-signal-1',
     setup() {
-        const count = signal(0)
-        const doubled = computed(() => count.get() * 2)
+        const doubled = computed(() => sharedCount.get() * 2)
+        return () => html`<button @click=${() => sharedCount.set(sharedCount.get() + 1)}>${sharedCount.get()} → ${doubled.get()}</button>`
+    },
+})
 
-        // Run a side effect whenever `doubled` changes
-        watch(() => {
-            console.log('doubled is now', doubled.get())
-        })
-
-        return () => html`<button @click=${() => count.set(count.get() + 1)}>${count.get()} → ${doubled.get()}</button>`
+defineElement({
+    name: 'with-signal-2',
+    setup() {
+        const doubled = computed(() => sharedCount.get() * 2)
+        return () => html`<button @click=${() => sharedCount.set(sharedCount.get() + 1)}>${sharedCount.get()} → ${doubled.get()}</button>`
     },
 })
 ```
@@ -367,7 +359,10 @@ They are fully interoperable with Lit’s own @provide and @consume decorators.
 
 Install note: @lit/context is an optional peer dependency; install it if you use these helpers (see Installation above).
 
-Basic usage
+### Basic usage
+
+`provide` and `consume` are provided at from a dedicated entry point.
+They are about the same as `@provide` and `@consume` from @lit/context, but without decorator logic.
 
 ```ts
 import {html} from 'lit'
@@ -398,7 +393,7 @@ defineElement({
 })
 ```
 
-Interoperability with Lit decorators
+### Interoperability with Lit decorators
 
 You can mix and match providers/consumers across lit-composition and classic Lit components.
 
@@ -407,7 +402,7 @@ You can mix and match providers/consumers across lit-composition and classic Lit
 ```ts
 import {html, LitElement} from 'lit'
 import {customElement} from 'lit/decorators.js'
-import {consume as consumeDec, createContext} from '@lit/context'
+import {consume, createContext} from '@lit/context'
 import {defineElement} from 'lit-composition'
 import {provide} from 'lit-composition/context'
 
@@ -423,7 +418,8 @@ defineElement({
 
 @customElement('lit-consumer')
 class LitConsumer extends LitElement {
-    @consumeDec({context: ctx}) accessor value!: string
+    @consume({context: ctx})
+    accessor value!: string
 
     render() {
         return html`<div>${this.value}</div>`
@@ -436,7 +432,7 @@ class LitConsumer extends LitElement {
 ```ts
 import {html, LitElement} from 'lit'
 import {customElement} from 'lit/decorators.js'
-import {provide as provideDec, createContext} from '@lit/context'
+import {provide, createContext} from '@lit/context'
 import {defineElement} from 'lit-composition'
 import {consume} from 'lit-composition/context'
 
@@ -444,7 +440,8 @@ const ctx = createContext<string>(Symbol('demo-2'))
 
 @customElement('lit-provider')
 class LitProvider extends LitElement {
-    @provideDec({context: ctx}) accessor provided = 'from lit'
+    @provide({context: ctx})
+    accessor provided = 'from lit'
 
     render() {
         return html`<comp-consumer></comp-consumer>`
@@ -461,7 +458,7 @@ defineElement({
 })
 ```
 
-Notes
+### Notes
 
 - provide(context, value) and consume(context) must be called during setup(), so there is a current component instance.
 - consume() returns a live ContextConsumer with a .value property and subscribes to updates; using .value in render will
@@ -477,7 +474,7 @@ Supported defineElement options (compact overview):
 
 - name?: string — tag name; auto-registers unless register: false
 - register?: boolean — disable automatic customElements.define
-- parent?: typeof LitElement — extend a custom LitElement base/mixin
+- parent?: typeof LitElement — the element to extend from. can already be _mixed in_.
 - styles?: CSSResultGroup — equivalent to static styles
 - props?: Record<string, PropertyDeclaration> — like Lit static properties
 - shadowRoot?: boolean — false to render into light DOM
