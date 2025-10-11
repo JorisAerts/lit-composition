@@ -24,7 +24,7 @@ defineElement({
 defineElement({
     name: 'theme-consumer',
     setup() {
-        const consumer = inject(ThemeContext)
+        const consumer = consume(ThemeContext)
         return () => html`<div style="color:${consumer.value.color}"><slot></slot></div>`
     }
 })

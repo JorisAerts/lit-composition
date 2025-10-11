@@ -3,7 +3,7 @@ import { consume as $consume, createContext, provide as $provide } from '@lit/co
 import { customElement } from 'lit/decorators.js'
 
 import { defineElement } from '../../src'
-import { inject, provide } from '../../src/context'
+import { consume, provide } from '../../src/context'
 
 describe('context', () => {
   describe('provide', () => {
@@ -52,7 +52,7 @@ describe('context', () => {
         name: 'test-consume-2',
         shadowRoot: false,
         setup() {
-          const test = inject(context)
+          const test = consume(context)
           return () => html`<div>${test.value}</div>`
         },
       })
