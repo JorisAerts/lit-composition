@@ -49,7 +49,9 @@ defineElement({
 
 ```ts
 defineElement({
-    name: 'editor-block', shadowRoot: false, render() {
+    name: 'editor-block',
+    shadowRoot: false,
+    render() {
         return html`<slot></slot>`
     }
 })
