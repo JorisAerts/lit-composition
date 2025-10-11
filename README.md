@@ -38,30 +38,21 @@ It requires no decorators and allows developers to write approved standardized J
 - Lifecycle hooks
 - Props and defaults
 - Shadow DOM control
-- Refs and computed
 - Context: provide & consume
 - Options reference
 
 ## Installation
 
-Peer requirements: lit >=3 (required), @lit/context >=1 (optional, only if you use context helpers).
+Peer requirements: lit >=3 (required), @lit-labs/signals >= 0.1.3 (required), @lit/context >=1 (optional, only if you
+use context helpers).  
+The requirement on @lit-labs/signals is to wire signals into the returned Lit element.
 
 ```bash
-pnpm add lit lit-composition
+pnpm add lit @lit-labs/signals lit-composition
 # or
-npm i lit lit-composition
+npm i lit @lit-labs/signals lit-composition
 # or
-yarn add lit lit-composition
-```
-
-If you plan to use signals (recommended):
-
-```bash
-pnpm add @lit-labs/signals
-# or
-npm i @lit-labs/signals
-# or
-yarn add @lit-labs/signals
+yarn add lit @lit-labs/signals lit-composition
 ```
 
 If you want to use provide / consume:
@@ -289,7 +280,7 @@ import {html} from 'lit'
 import {signal, computed} from '@lit-labs/signals'
 
 defineElement({
-    name: 'with-refs',
+    name: 'with-signal',
     shadowRoot: false,
     setup() {
         const count = signal(0)
