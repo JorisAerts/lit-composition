@@ -43,7 +43,7 @@
     "@microsoft/api-extractor": "^7.53.1",
     "@stylistic/eslint-plugin": "^5.4.0",
     "@tsconfig/node24": "^24.0.1",
-    "@types/node": "^24.7.1",
+    "@types/node": "^24.7.2",
     "cypress": "^15.4.0",
     "cypress-ct-lit": "^1.0.0",
     "eslint": "^9.37.0",
