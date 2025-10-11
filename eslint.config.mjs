@@ -90,6 +90,7 @@ export default [
     rules: {
       ...TSESLint.configs.disableTypeChecked.rules,
       'no-undef': ['off'],
+      '@typescript-eslint/ban-ts-comment': ['error', { 'ts-expect-error': 'allow-with-description' }],
       '@typescript-eslint/no-unused-vars': ['off'],
       '@typescript-eslint/no-unused-expressions': ['off'],
       '@typescript-eslint/no-empty-function': ['off'],

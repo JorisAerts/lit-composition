@@ -19,6 +19,7 @@ export default defineConfig({
       entry: {
         index: resolve(__dirname, 'src/index.ts'),
         context: resolve(__dirname, 'src/context/index.ts'),
+        signals: resolve(__dirname, 'src/signals/index.ts'),
       },
       name: 'lit-composition',
       formats: ['es', 'cjs'],

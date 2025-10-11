@@ -1,5 +1,5 @@
 import { defineElement } from 'lit-composition'
-import { md } from '../../utils/md.ts'
+import { md } from '../../utils/md'
 import cssMarkdown from '../../style/markdown.scss?inline'
 import { nothing, unsafeCSS } from 'lit'
 import { until } from 'lit/directives/until.js'

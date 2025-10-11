@@ -1,4 +1,4 @@
-import type { ValidCustomElementName } from './types'
+import type { ValidCustomElementName } from './ValidCustomElementName'
 
 export const registerCustomElement = (name: ValidCustomElementName, constructor: CustomElementConstructor) =>
   customElements.define(name, constructor)

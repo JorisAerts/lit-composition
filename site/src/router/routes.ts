@@ -1,7 +1,7 @@
 import { html } from 'lit'
 import type { RouteConfig } from '@lit-labs/router/routes.js'
 import * as md from '../md-pages'
-import { BASE_URL } from '../constants.ts'
+import { BASE_URL } from '../constants'
 
 import '../pages/home'
 import '../pages/docs'
