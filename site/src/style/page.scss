@@ -1,5 +1,9 @@
 @use "./markdown";
 
+html, body {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
 a, a:visited {
   color: #eeeeee;
   text-decoration: none;

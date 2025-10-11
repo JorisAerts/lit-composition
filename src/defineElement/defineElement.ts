@@ -130,7 +130,7 @@ export function defineElement<
   Name extends ValidCustomElementName,
   UseShadowRoot extends boolean,
   Properties extends Record<string, DefinePropertyDeclaration>,
-  Styles extends UseShadowRoot extends true | undefined ? CSSResultGroup : undefined,
+  Styles extends UseShadowRoot extends true | undefined ? CSSResultGroup | undefined : undefined,
   Parent extends typeof LitElement,
   Instance extends InstanceType<Parent> & UnwrapProps<Properties>,
   Render extends (this: Instance) => unknown,

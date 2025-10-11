@@ -4,6 +4,10 @@ $spacer: 4px;
   display: flex;
 }
 
+.d-block {
+  display: block;
+}
+
 .flex-column {
   flex-direction: column;
 }
@@ -43,21 +47,87 @@ $spacer: 4px;
 
 // PADDING
 
-@for $i from 1 through 12 {
+@for $i from 0 through 12 {
   .pa-#{$i} {
-    padding: $i * $spacer;
+    padding: $i * $spacer !important;
   }
 
   .px-#{$i} {
-    padding-left: $i * $spacer;
-    padding-right: $i * $spacer;
+    padding-left: $i * $spacer !important;
+    padding-right: $i * $spacer !important;
   }
 
   .py-#{$i} {
-    padding-top: $i * $spacer;
-    padding-bottom: $i * $spacer;
+    padding-top: $i * $spacer !important;
+    padding-bottom: $i * $spacer !important;
   }
 
+  .pr-#{$i} {
+    padding-right: $i * $spacer !important;
+  }
+
+  .pl-#{$i} {
+    padding-left: $i * $spacer !important;
+  }
+
+  .pt-#{$i} {
+    padding-top: $i * $spacer !important;
+  }
+
+  .pb-#{$i} {
+    padding-bottom: $i * $spacer !important;
+  }
+
+  .ma-#{$i} {
+    margin: $i * $spacer !important;
+  }
+
+  .mx-#{$i} {
+    margin-left: $i * $spacer !important;
+    margin-right: $i * $spacer !important;
+  }
+
+  .my-#{$i} {
+    margin-top: $i * $spacer !important;
+    margin-bottom: $i * $spacer !important;
+  }
+
+  .mr-#{$i} {
+    margin-right: $i * $spacer !important;
+  }
+
+  .ml-#{$i} {
+    margin-left: $i * $spacer !important;
+  }
+
+  .mt-#{$i} {
+    margin-top: $i * $spacer !important;
+  }
+
+  .mb-#{$i} {
+    margin-bottom: $i * $spacer !important;
+  }
+}
+
+.ma-auto {
+  margin: auto !important;
+}
+
+.mx-auto {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.my-auto {
+  margin-top: auto !important;
+  margin-bottom: auto !important;
+}
+
+.full-width {
+  width: 100% !important;
 }
 
 
+.justify-center {
+  justify-content: center;
+}
