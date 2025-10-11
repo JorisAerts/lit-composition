@@ -293,8 +293,8 @@ defineElement({
     shadowRoot: false,
     setup() {
         const count = signal(0)
-        const doubled = computed(() => count.value * 2)
-        return () => html`<button @click=${() => count.value++}>${count.value} → ${doubled.value}</button>`
+        const doubled = computed(() => count.get() * 2)
+        return () => html`<button @click=${() => count.set(count.get() + 1)}>${count.get()} → ${doubled.get()}</button>`
     },
 })
 ```
@@ -305,89 +305,28 @@ Signals work at module scope too so you can share tiny state between components:
 import {signal, computed} from '@lit-labs/signals'
 
 export const sharedCount = signal(0)
-export const doubled = computed(() => sharedCount.value * 2)
+export const doubled = computed(() => sharedCount.get() * 2)
 ```
 
-### Classic LitElement interop
+## Side effects with `watch`
 
-Classic `LitElement` classes don't automatically participate in the `defineElement()` setup lifecycle. If you need
-to subscribe a classic element to signals, create an `effect` in the element lifecycle and call `requestUpdate()` as
-needed. In practice, most uses don't need manual wiring because `defineElement()` instances already integrate with the
-signal runtime.
-
-Example: manual signal binding in a classic LitElement
-
-```ts
-import {LitElement, html} from 'lit'
-import {signal, effect} from '@lit-labs/signals'
-
-const shared = signal(123)
-
-class MyClassic extends LitElement {
-    connectedCallback() {
-        super.connectedCallback()
-        // subscribe and request update on changes
-        this._stop = effect(() => {
-            // read to track dependency
-            void shared.value
-            this.requestUpdate()
-        })
-    }
-
-    disconnectedCallback() {
-        this._stop?.()
-        super.disconnectedCallback()
-    }
-
-    render() {
-        return html`<div>${shared.value}</div>`
-    }
-}
-
-customElements.define('my-classic', MyClassic)
-```
-
-## Effects
-
-Use `effect` from `@lit-labs/signals` to run side effects when signals change. It is similar in purpose to `watch` but
-fits the signals model directly. Return a cleanup function to unsubscribe.
-
-```ts
-import {effect} from '@lit-labs/signals'
-
-// inside setup() or a lifecycle hook
-effect(() => {
-    // read signal.value to track dependency
-    console.log('value changed')
-    return () => { /* cleanup */
-    }
-})
-```
-
-## Side effects with `effect`
-
-Use `effect` from `@lit-labs/signals` when you need to run side effects in response to signal changes. You can safely
+Use `watch` from `@lit-labs/signals` when you need to run side effects in response to signal changes. You can safely
 use it inside `setup()` and clean up automatically on disconnect.
 
 ```ts
 import {defineElement} from 'lit-composition'
 import {html} from 'lit'
-import {signal, computed, effect} from '@lit-labs/signals'
+import {signal, computed, watch} from '@lit-labs/signals'
 
 defineElement({
     name: 'with-effect',
     shadowRoot: false,
     setup() {
         const count = signal(0)
-        const doubled = computed(() => count.value * 2)
-
-        effect(() => {
-            // reading tracks dependencies
-            console.log(`Count is ${count.value}, doubled is ${doubled.value}`)
-        })
+        const doubled = computed(() => count.get() * 2)
 
         return () => html`<button @click=
-            ${() => count.value++}>${count.value} → ${doubled.value}</button>`
+            ${() => count.set(count.get() + 1)}>${watch(count)} → ${watch(doubled)}</button>`
     },
 })
 ```

@@ -1,4 +1,4 @@
-# Context — provide & inject (experimental)
+# Context — provide & consume (experimental)
 
 Context helpers wrap `@lit/context` to provide a small DI mechanism. The helpers live in `src/context/` and should be
 used from inside `setup()` only.
@@ -7,7 +7,7 @@ used from inside `setup()` only.
 
 ```ts
 import {defineElement} from 'lit-composition'
-import {provide, inject} from 'lit-composition/context'
+import {provide, consume} from 'lit-composition/context'
 import {createContext} from '@lit/context'
 import {html} from 'lit'
 
@@ -30,14 +30,7 @@ defineElement({
 })
 ```
 
-you can also use `consume` instead of `inject`.
-The reason why it's called that way is because of bad naming,
-as `consume` is sounds like you only _consume_ the value once.
-
-```ts
-import {consume} from 'lit-composition/context'
-
-// ... do exactly the same as with inject
-```
-
-Your choice.
+Notes:
+- Call provide() and consume() during setup() so there is a current component instance.
+- consume() returns a live ContextConsumer with a .value property and subscribes to updates; using .value in render will re-render when it changes.
+- These helpers wrap @lit/context and interoperate with Lit’s @provide/@consume decorators.

@@ -13,7 +13,13 @@ pnpm add lit lit-composition
 npm i lit lit-composition
 ```
 
-If you plan to use context helpers (provide/inject) also install `@lit/context`:
+If you plan to use signals (recommended) also install `@lit-labs/signals`:
+
+```bash
+pnpm add @lit-labs/signals
+```
+
+If you plan to use context helpers (provide/consume) also install `@lit/context`:
 
 ```bash
 pnpm add @lit/context
