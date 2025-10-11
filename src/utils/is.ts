@@ -10,3 +10,5 @@ export const isUndefined = (value: unknown): value is undefined => value === und
 // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
 export const isSubclassOf = (subclass: Function, superclass: Function) =>
   subclass === superclass || Object.prototype.isPrototypeOf.call(superclass.prototype, subclass.prototype)
+export const isClass = (value: unknown): value is new (...args: any[]) => unknown =>
+  isFunction(value) && Function.prototype.toString.call(value).trim().startsWith('class')
