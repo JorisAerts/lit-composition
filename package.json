@@ -66,6 +66,9 @@
   "peerDependenciesMeta": {
     "@lit/context": {
       "optional": true
+    },
+    "@lit-labs/signals": {
+      "optional": true
     }
   },
   "module": "./src/index.ts",
