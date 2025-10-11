@@ -109,8 +109,7 @@ describe('defineElement', () => {
     it('styles should not be applied when no ShadowRoot', () => {
       defineElement({
         name: 'test-styles-2',
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-expect-error
+        // @ts-expect-error "styles" can only be used in a shadow root
         styles: css`
           div {
             font-size: 32px;
