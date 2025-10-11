@@ -30,7 +30,4 @@ async function* produce(strings: TemplateStringsArray, ...args: unknown[]) {
 /**
  * use <code> md\`<some markdown>\`</code> to render Markdown into a lit-html template.
  */
-export function md(strings: TemplateStringsArray, ...args: unknown[]) {
-  console.log(strings, args)
-  return asyncAppend(produce(strings, ...args))
-}
+export const md = (strings: TemplateStringsArray, ...args: unknown[]) => asyncAppend(produce(strings, ...args))

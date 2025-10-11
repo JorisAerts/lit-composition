@@ -22,7 +22,6 @@ It requires no decorators and allows developers to write approved standardized J
 - TypeScript-first, but works in plain JS
 - Lit-compatible props with optional defaults
 - Composable lifecycle hooks (onConnected, onUpdated, …)
-- Reactive state with useRef and derived values with computed
 - Two ways to render: return a function from setup(), or provide render()
 - Fast shorthand: defineElement('my-tag', () => html`...`)
 - Shadow DOM control via shadowRoot: false
@@ -36,15 +35,18 @@ It requires no decorators and allows developers to write approved standardized J
 - Usage
 - No decorators required
 - Lifecycle hooks
-- Props and defaults
+- Props and default values
 - Shadow DOM control
-- Refs and computed
-- Context: provide & inject
+- Context: provide & consume
 - Options reference
 
 ## Installation
 
-Peer requirements: lit >=3 (required), @lit/context >=1 (optional, only if you use context helpers).
+Peer requirements: lit >=3 (required).
+Optional peers:
+
+- @lit-labs/signals >= 0.1.3 (optional, when using Signals)
+- @lit/context >=1 (optional, when using context helpers).
 
 ```bash
 pnpm add lit lit-composition
@@ -54,7 +56,21 @@ npm i lit lit-composition
 yarn add lit lit-composition
 ```
 
-If you want to use provide / inject:
+Signals support is provided via a separate entry point `'lit-composition/signals'` that wires SignalWatcher into
+the returned Lit element.
+You'll first need to add a Lit dependency for signals:
+
+```bash
+pnpm add @lit-labs/signals
+# or
+npm i @lit-labs/signals
+# or
+yarn add @lit-labs/signals
+```
+
+Provide and consume support is also provided via a separate entry point `'lit-composition/context'` that
+provides a set of helpers to provide and consume context.
+As with signals, you'll first need to add a Lit dependency for context:
 
 ```bash
 pnpm add @lit/context
@@ -66,13 +82,15 @@ yarn add @lit/context
 
 ## Setup
 
+Besides adding the lit-composition pakcage to your project, no further setup is required.
+
 - TypeScript: No experimental decorators required. Recommended tsconfig: target ES2020+ (or latest your environment
   supports), module ES2020/ESNext, libs include DOM and ES2020. You do NOT need experimentalDecorators or
   emitDecoratorMetadata.
 - Bundlers: Package is pure ESM with standard exports. Works out-of-the-box with Vite, Rollup, and Webpack 5+. No
   special plugins or config needed.
-- Import paths: Most APIs come from 'lit-composition'. Context helpers live under the subpath '
-  lit-composition/context' (see examples below).
+- Import paths: Most APIs come from 'lit-composition'. The signals-enabled variant of defineElement is available from '
+  lit-composition/signals'. Context helpers live under the subpath 'lit-composition/context' (see examples below).
 - Peer deps: Install lit@^3. If you use context helpers, also install @lit/context.
 - Runtime support: Modern evergreen browsers (Chromium, Firefox, Safari). For tooling scripts (not the browser), Node
   18+ is recommended.
@@ -204,7 +222,7 @@ defineElement({
 })
 ```
 
-## Props and defaults
+## Props and default values
 
 The props option uses Lit’s property declaration shape. Types are inferred from constructors in TS.
 
@@ -267,220 +285,81 @@ defineElement({
 })
 ```
 
-## Refs and computed
+## Signals (recommended)
 
-Maintain small reactive bits of state that integrate with Lit updates without needing @state or @property. Use
-`useRef()` for a mutable reactive value and `computed()` for derived values.
+Signals work at module scope too so you can share tiny state between components
+(see [Lit Signals](https://lit.dev/docs/data/signals/)):
 
 ```ts
-import {defineElement, useRef, computed} from 'lit-composition'
+import {signal, computed} from '@lit-labs/signals'
+
+export const sharedCount = signal(0)
+export const doubled = computed(() => sharedCount.get() * 2)
+```
+
+lit-composition embraces signals from `@lit-labs/signals` for local and shared reactive state.  
+A separate import is defined at 'lit-composition/signals' for importing `defineElement`.
+This class is just a version of `defineElement` is just a shorthand for
+
+```ts
+import {LitElement} from 'lit'
+import {SignalWatcher} from '@lit-labs/signals'
+import {defineElement} from 'lit-composition/signals'
+
+defineElement({
+    // ... other options
+    parent: SignalWatcher(LitElement), // LitElement, or whatever was passed as parent
+})
+```
+
+The class returned by that `defineElement()` extends SignalWatcher, so any signals you read in `
+setup()` or the render
+will keep the component in sync automatically.
+
+```ts
+import {defineElement} from 'lit-composition/signals'
+import {signal, computed} from '@lit-labs/signals'
 import {html} from 'lit'
 
 defineElement({
-    name: 'with-refs',
+    name: 'with-signal',
     shadowRoot: false,
     setup() {
-        const count = useRef(0)
-        const doubled = computed(() => count.value * 2)
-        return () => html`<button @click=${() => count.value++}>${count.value} → ${doubled.value}</button>`
+        const count = signal(0)
+        const doubled = computed(() => count.get() * 2)
+        return () => html`<button @click=${() => count.set(count.get() + 1)}>${count.get()} → ${doubled.get()}</button>`
     },
 })
 ```
 
-- `useRef(initial)` returns an object with a `.value` that triggers re-render on change.
-- `computed(getter | {get, set})` creates a read-only or writable derived ref; it re-computes when any of its
-  dependencies change.
+## Side effects with `watch`
 
-You can also create refs outside a component and share them across multiple components. A ref is just a tiny reactive
-container; it is not tied to any specific element instance. Any component that reads a shared ref will update when that
-ref changes.
+Use `watch` from `@lit-labs/signals` to run side effects in response to signal changes. Call it inside `setup()`; it
+registers an effect that is automatically cleaned up when the component disconnects.
 
 ```ts
-import {defineElement, useRef, computed} from 'lit-composition'
+import {defineElement} from 'lit-composition/signals'
 import {html} from 'lit'
-
-// Module-scoped shared ref
-export const sharedCount = useRef(0)
-
-defineElement({
-    name: 'counter-a',
-    shadowRoot: false,
-    setup() {
-        const doubled = computed(() => sharedCount.value * 2)
-        return () => html`<button @click=${() => sharedCount.value++}>A: ${sharedCount.value} → ${doubled.value}</button>`
-    },
-})
-
-defineElement({
-    name: 'counter-b',
-    shadowRoot: false,
-    setup() {
-        return () => html`B sees: ${sharedCount.value}`
-    },
-})
-```
-
-### takeRef — use refs from "regular" Lit elements
-
-`takeRef` is a small utility that lets you attach an existing `useRef()` or `computed()` ref to a plain `LitElement`
-instance so that the element will subscribe to updates from that ref and request updates when the ref changes.
-
-Why this exists
-
-- `useRef()` and `computed()` return lightweight reactive containers that integrate with lit-composition's
-  reactivity system. Components created with `defineElement()` automatically pick up refs that are read during their
-  render/setup lifecycle. Classic `LitElement` classes don't participate in that setup lifecycle, so `takeRef` lets you
-  manually register a `LitElement` instance as a subscriber for an existing ref.
-
-API
-
-- takeRef(element: ReactiveElement, ref: Effect<T>) => Effect<T>
-
-Notes
-
-- `takeRef` does not clone the ref — it returns the same ref you pass in. It simply registers the provided `element`
-  as a subscriber so that when the ref changes the element's `requestUpdate()` is called.
-- Works with both `useRef()` and `computed()`.
-
-Examples
-
-1) Using a shared `useRef` inside a classic `LitElement`:
-
-```ts
-import {LitElement, html} from 'lit'
-import {useRef, takeRef} from 'lit-composition'
-
-const shared = useRef(123)
-
-class MyClassic extends LitElement {
-    static properties = {ref: {type: Object}}
-
-    constructor() {
-        super()
-        // register this element to receive updates when `shared` changes
-        this.ref = takeRef(this, shared)
-    }
-
-    render() {
-        return html`<div>${this.ref.value}</div>`
-    }
-}
-
-customElements.define('my-classic', MyClassic)
-```
-
-2) Attaching a computed ref to a classic `LitElement`:
-
-```ts
-import {LitElement, html} from 'lit'
-import {computed, takeRef} from 'lit-composition'
-
-const comp = computed(() => 42)
-
-class CompClassic extends LitElement {
-    static properties = {ref: {type: Object}}
-
-    constructor() {
-        super()
-        this.ref = takeRef(this, comp)
-    }
-
-    render() {
-        return html`<div>${this.ref.value}</div>`
-    }
-}
-
-customElements.define('comp-classic', CompClassic)
-```
-
-3) When using `defineElement()` you usually don't need `takeRef` because the setup/render lifecycle will subscribe
-   automatically when you read refs. `takeRef` is intended for interoperability with non-defineElement consumers.
-
-## Watching reactive state with `watch`
-
-The `watch` function lets you run a callback when one or more refs or computed values change, similar to Vue's `watch`.
-It is useful for responding to changes in state, performing side effects, or synchronizing with external systems.
-
-**Usage:**
-
-- `watch(refOrGetter, (newVal, oldVal) => { ... })`
-- `watch([ref1, getter2], ([new1, new2], [old1, old2]) => { ... })`
-
-The callback receives the new and previous value(s). The watcher runs only when the value(s) change. By default, the
-callback is not called immediately on setup, but you can pass `{ immediate: true }` as a third argument to run it once
-with the current value(s).
-
-**Examples:**
-
-```ts
-import {defineElement, useRef, watch} from 'lit-composition'
-import {html} from 'lit'
-
-defineElement({
-    name: 'my-watcher',
-    setup() {
-        const count = useRef(0)
-        const label = useRef('')
-
-        // Watch a single ref
-        watch(count, (newVal, oldVal) => {
-            console.log('Count changed from', oldVal, 'to', newVal)
-        })
-
-        // Watch multiple sources
-        watch([count, label], ([newCount, newLabel], [oldCount, oldLabel]) => {
-            console.log('Count or label changed:', {newCount, newLabel, oldCount, oldLabel})
-        })
-
-        // Watch with immediate option
-        watch(count, (newVal) => {
-            console.log('Immediate count:', newVal)
-        }, {immediate: true})
-
-        return () => html`
-            <button @click=${() => count.value++}>Inc: ${count.value}</button>
-            <input .value=${label.value} @input=${e => label.value = e.target.value} />
-        `
-    },
-})
-```
-
-**Notes:**
-
-- You can watch refs, computed values, or getter functions.
-- The stop function returned by `watch` can be called to stop watching.
-
-## Side effects with `watchEffect`
-
-The `watchEffect` function runs a function immediately and re-runs it whenever any of its reactive dependencies change.
-This is useful for simple reactive side effects that do not need access to previous values.
-
-**Example:**
-
-```ts
-import {defineElement, useRef, computed, watchEffect} from 'lit-composition'
-import {html} from 'lit'
+import {signal, computed, watch} from '@lit-labs/signals'
 
 defineElement({
     name: 'with-effect',
     shadowRoot: false,
     setup() {
-        const count = useRef(0)
-        const doubled = computed(() => count.value * 2)
+        const count = signal(0)
+        const doubled = computed(() => count.get() * 2)
 
-        watchEffect(() => {
-            console.log(`Count is ${count.value}, doubled is ${doubled.value}`)
+        // Run a side effect whenever `doubled` changes
+        watch(() => {
+            console.log('doubled is now', doubled.get())
         })
 
-        return () => html`<button @click=${() => count.value++}>${count.value} → ${doubled.value}</button>`
+        return () => html`<button @click=${() => count.set(count.get() + 1)}>${count.get()} → ${doubled.get()}</button>`
     },
 })
 ```
 
-- `watchEffect(fn)` runs the given function immediately and re-runs it whenever any of its reactive dependencies change.
-  Returns a stop function (currently a no-op).
-
-## Context: provide & inject (with @lit/context)
+## Context: provide & consume (with @lit/context)
 
 lit-composition ships tiny helpers on top of @lit/context so you can share data across a component tree without
 decorators.
@@ -494,7 +373,7 @@ Basic usage
 import {html} from 'lit'
 import {defineElement} from 'lit-composition'
 import {createContext} from '@lit/context'
-import {provide, inject} from 'lit-composition/context'
+import {provide, consume} from 'lit-composition/context'
 
 // 1) Create a context once (module scope)
 const userContext = createContext<{ name: string }>(Symbol('user'))
@@ -508,12 +387,12 @@ defineElement({
     },
 })
 
-// 3) Inject (consume) downstream
+// 3) Consume downstream
 defineElement({
     name: 'user-greeting',
     shadowRoot: false,
     setup() {
-        const user = inject(userContext) // ContextConsumer with a reactive .value
+        const user = consume(userContext) // ContextConsumer with a reactive .value
         return () => html`Hello, ${user.value.name}!`
     },
 })
@@ -552,14 +431,14 @@ class LitConsumer extends LitElement {
 }
 ```
 
-- Lit provides (@provide) → defineElement consumes (inject):
+- Lit provides (@provide) → defineElement consumes:
 
 ```ts
 import {html, LitElement} from 'lit'
 import {customElement} from 'lit/decorators.js'
 import {provide as provideDec, createContext} from '@lit/context'
 import {defineElement} from 'lit-composition'
-import {inject} from 'lit-composition/context'
+import {consume} from 'lit-composition/context'
 
 const ctx = createContext<string>(Symbol('demo-2'))
 
@@ -576,7 +455,7 @@ defineElement({
     name: 'comp-consumer',
     shadowRoot: false,
     setup() {
-        const v = inject(ctx)
+        const v = consume(ctx)
         return () => html`<div>${v.value}</div>`
     },
 })
@@ -584,8 +463,8 @@ defineElement({
 
 Notes
 
-- provide(context, value) and inject(context) must be called during setup(), so there is a current component instance.
-- inject() returns a live ContextConsumer with a .value property and subscribes to updates; using .value in render will
+- provide(context, value) and consume(context) must be called during setup(), so there is a current component instance.
+- consume() returns a live ContextConsumer with a .value property and subscribes to updates; using .value in render will
   re-render when it changes.
 - These helpers just wrap @lit/context under the hood; anything that works with @provide/@consume also works across
   lit-composition components.

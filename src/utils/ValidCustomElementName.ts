@@ -1,3 +1,13 @@
+export type ForbiddenCustomElementNames =
+  | 'annotation-xml'
+  | 'color-profile'
+  | 'font-face'
+  | 'font-face-src'
+  | 'font-face-uri'
+  | 'font-face-format'
+  | 'font-face-name'
+  | 'missing-glyph'
+
 type FirstCharacter =
   | 'a'
   | 'b'
@@ -30,3 +40,7 @@ type FirstCharacter =
  * A very basic validator for custom element names.
  */
 export type ValidCustomElementName = `${Lowercase<`${FirstCharacter}${string}-${string}`>}`
+
+export type ValidatedCustomElementName<Name extends ValidCustomElementName> = Name extends ForbiddenCustomElementNames
+  ? never
+  : Name

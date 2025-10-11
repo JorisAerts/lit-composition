@@ -1,11 +1,11 @@
 import type { CSSResultGroup, PropertyDeclaration } from 'lit'
 import { LitElement } from 'lit'
 import { dummyFn } from '../utils/dummyFn'
-import type { ValidCustomElementName } from '../utils/ValidCustomElementName'
+import type { ValidatedCustomElementName, ValidCustomElementName } from '../utils/ValidCustomElementName'
 import { isFunction, isString, isUndefined } from '../utils/is'
-import { withCurrentInstance } from '../currentInstance'
-import { withHooks } from './hooks'
 import { registerCustomElement } from '../utils/browser'
+import { withHooks } from './hooks'
+import { withCurrentInstance } from '../currentInstance'
 
 export type UnwrapProps<Props extends Record<string, DefinePropertyDeclaration>> = {
   [K in keyof Props]: InferPropType<Props[K]>
@@ -24,11 +24,11 @@ type InferPropType<T, NullAsAny = true> = [T] extends [null]
     ? unknown
     : [T] extends [DefinePropertyDeclaration<unknown, ObjectConstructor>]
       ? Record<string, unknown>
-      : [T] extends [BooleanConstructor | DefinePropertyDeclaration<unknown, BooleanConstructor>]
+      : [T] extends [DefinePropertyDeclaration<unknown, BooleanConstructor>]
         ? boolean
-        : [T] extends [DateConstructor | DefinePropertyDeclaration<unknown, DateConstructor>]
+        : [T] extends [DefinePropertyDeclaration<unknown, DateConstructor>]
           ? Date
-          : [T] extends [(infer U)[] | DefinePropertyDeclaration<unknown, (infer U)[]>]
+          : [T] extends [DefinePropertyDeclaration<unknown, (infer U)[]>]
             ? U extends DateConstructor
               ? Date | InferPropType<U, false>
               : InferPropType<U, false>
@@ -48,7 +48,8 @@ type InferPropType<T, NullAsAny = true> = [T] extends [null]
 
 export type PropType<T> = TypeConstructor<T> | (TypeConstructor<T> | null)[]
 
-interface DefinePropertyDeclaration<Type = unknown, TypeHint = unknown> extends PropertyDeclaration<Type, TypeHint> {
+export interface DefinePropertyDeclaration<Type = unknown, TypeHint = unknown>
+  extends PropertyDeclaration<Type, TypeHint> {
   readonly type?: TypeHint
   readonly default?: TypeHint | (() => TypeHint)
 }
@@ -61,9 +62,7 @@ const assignDefaultValues = <T extends HTMLElement>(obj: T, props?: Record<strin
     obj[key as keyof T] ??= value
   })
 
-// END-OF-HOOKS
-
-const defineElementWithOptions = <
+export const defineElementWithOptions = <
   Name extends ValidCustomElementName,
   UseShadowRoot extends boolean,
   Properties extends Record<string, DefinePropertyDeclaration>,
@@ -72,21 +71,24 @@ const defineElementWithOptions = <
   Instance extends InstanceType<Parent> & UnwrapProps<Properties>,
   Render extends (this: Instance) => unknown,
   Setup extends (this: Instance, comp?: Instance) => void | Render,
->(options: {
-  name?: Name
-  parent?: Parent
-  styles?: Styles
-  props?: Properties
+>(
+  options: {
+    name?: ValidatedCustomElementName<Name>
+    parent?: Parent
+    styles?: Styles
+    props?: Properties
 
-  register?: boolean
-  shadowRoot?: UseShadowRoot
+    register?: boolean
+    shadowRoot?: UseShadowRoot
 
-  setup?: Setup
-  render?: Render
-}): typeof LitElement => {
+    setup?: Setup
+    render?: Render
+  },
+  decorator: LitElementDecorator
+): typeof LitElement => {
   options = Object.create(options) as typeof options
   const { name, parent: BaseClass = LitElement, register } = options
-  const SuperClass = withHooks(BaseClass)
+  const SuperClass = withHooks(decorator(BaseClass))
 
   const result = class extends SuperClass {
     static properties = options.props ?? ({} as Properties)
@@ -122,10 +124,29 @@ const defineElementWithOptions = <
 export type DefinedComponent = ReturnType<typeof defineElement>
 export type DefinedComponentInstance = InstanceType<DefinedComponent>
 
-const defineFunctionalComponent = (name: ValidCustomElementName, render: () => unknown) =>
-  defineElementWithOptions({ name, render, shadowRoot: false })
+type LitElementDecorator = (t: typeof LitElement) => typeof t
 
-export function defineElement(name: ValidCustomElementName, render: () => unknown): typeof LitElement
+export type FunctionComponentOptions = {
+  [K in keyof Parameters<typeof defineElementWithOptions>[0]]: Parameters<typeof defineElementWithOptions>[0][K]
+} & {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  styles: any
+}
+
+export const defineFunctionalComponent = <Name extends ValidCustomElementName>(
+  name: ValidatedCustomElementName<Name>,
+  render: () => unknown,
+  opts = {} as FunctionComponentOptions,
+  decorator: LitElementDecorator
+) => defineElementWithOptions({ ...opts, name, render, shadowRoot: false }, decorator)
+
+export type SkipLastParam<T extends unknown[]> = T extends [...infer U, unknown] ? U : never
+
+export function defineElement(
+  name: ValidCustomElementName,
+  render: () => unknown,
+  opts?: FunctionComponentOptions
+): typeof LitElement
 export function defineElement<
   Name extends ValidCustomElementName,
   UseShadowRoot extends boolean,
@@ -136,7 +157,7 @@ export function defineElement<
   Render extends (this: Instance) => unknown,
   Setup extends (this: Instance, comp?: Instance) => void | Render,
 >(options: {
-  name?: Name
+  name?: ValidatedCustomElementName<Name>
   parent?: Parent
   styles?: Styles
   props?: Properties
@@ -147,21 +168,10 @@ export function defineElement<
 }): typeof LitElement
 export function defineElement(
   ...args:
-    | [ValidCustomElementName, () => unknown]
-    | [
-        {
-          name?: ValidCustomElementName
-          parent?: typeof LitElement
-          styles?: CSSResultGroup
-          props?: Record<string, DefinePropertyDeclaration>
-          register?: boolean
-          shadowRoot?: boolean
-          setup?: (this: unknown, comp?: unknown) => void | ((this: unknown) => unknown)
-          render?: (this: unknown) => unknown
-        },
-      ]
+    | [name: ValidCustomElementName, render: () => unknown, opts?: FunctionComponentOptions]
+    | SkipLastParam<Parameters<typeof defineElementWithOptions>>
 ) {
   return isString(args[0])
-    ? defineFunctionalComponent(args[0], args[1] as () => unknown)
-    : defineElementWithOptions(args[0])
+    ? defineFunctionalComponent(args[0], args[1] as () => unknown, args[2], (l) => l)
+    : defineElementWithOptions(args[0], (l) => l)
 }

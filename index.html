@@ -21,8 +21,9 @@
     <script type="module" src="/src/index.ts"></script>
     <script type="module">
 
-        import {defineElement, useRef} from "./src";
+        import {defineElement} from "./src";
         import {html} from "lit";
+        import {signal} from "@lit-labs/signals";
 
         const el = defineElement({
             name: 'my-element',
@@ -30,9 +31,9 @@
                 welcome: 'Hello World!'
             },
             setup() {
-                const counter = useRef(1)
-                setInterval(() => counter.value++, 250)
-                return () => html`<h1>${this.welcome} (${counter.value})</h1>`
+                const counter = signal(1)
+                setInterval(() => counter.set(counter.get() + 1), 250)
+                return () => html`<h1>${this.welcome} (${counter.get()})</h1>`
             }
         })
     </script>

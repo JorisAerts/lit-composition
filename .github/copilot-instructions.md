@@ -16,7 +16,7 @@ Key points to rely on:
 Project structure (what matters to AI):
 - `src/defineElement/defineElement.ts` — core implementation and behavior contracts.
 - `src/defineElement/hooks.ts` — hook registration helpers used inside `setup()`.
-- `src/reactivity/*` — `useRef`, `computed`, `watch`, `takeRef` and integration points.
+- `docs/04-reactivity.md` — guidance on using `@lib-labs/signals` (signal, computed, effect) with defineElement.
 - `src/context/*` — `provide`/`inject` helpers (experimental, wraps `@lit/context`).
 - `src/utils/*` — small helpers (mixin, is, browser registration).
 

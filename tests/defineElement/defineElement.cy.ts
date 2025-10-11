@@ -1,6 +1,7 @@
 import { css, html, unsafeCSS } from 'lit'
 import { customElement } from 'lit/decorators.js'
-import { defineElement, onConnected } from '../../src'
+import { onConnected } from '../../src'
+import { defineElement } from '../../src/signals'
 
 describe('defineElement', () => {
   describe('rendering', () => {
@@ -108,6 +109,7 @@ describe('defineElement', () => {
     it('styles should not be applied when no ShadowRoot', () => {
       defineElement({
         name: 'test-styles-2',
+        // @ts-expect-error "styles" can only be used in a shadow root
         styles: css`
           div {
             font-size: 32px;
