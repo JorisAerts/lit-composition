@@ -4,7 +4,7 @@
 :host {
   --primary-color: rgb(0, 232, 255);
   --secondary-color: rgb(77, 99, 255);
-  --logo-height: 200px;
+  --logo-height: 250px;
   --logo-bg-width: calc(var(--logo-height) * 1.4);
   --color-gradient: linear-gradient(90deg, var(--primary-color) 30%, var(--secondary-color) 80%);
 
@@ -36,6 +36,17 @@
     position: absolute;
     height: var(--logo-height);
   }
+}
+
+.slogan {
+  padding: 0;
+  margin: 0;
+  font-size: 64px;
+  font-weight: 900;
+  line-height: 1.2;
+  color: transparent;
+  background-clip: text;
+  background-image: linear-gradient(125deg, var(--primary-color) 30%, var(--secondary-color) 50%);
 }
 
 .cards-row {

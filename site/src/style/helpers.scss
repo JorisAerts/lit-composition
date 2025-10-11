@@ -47,7 +47,7 @@ $spacer: 4px;
 
 // PADDING
 
-@for $i from 1 through 12 {
+@for $i from 0 through 12 {
   .pa-#{$i} {
     padding: $i * $spacer !important;
   }

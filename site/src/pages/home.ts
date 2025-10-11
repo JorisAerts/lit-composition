@@ -11,26 +11,21 @@ defineElement({
   styles: [unsafeCSS(cssPage), unsafeCSS(cssHelpers), unsafeCSS(cssHome)],
   setup() {
     return () => html`
-      <div class="d-flex" style="height: 400px; justify-items: center">
-        <div style="flex: 1 1 0;">
-          <h1>Lit-composition</h1>
+      <div class="d-flex" style="gap:32px; height: 500px; justify-items: center">
+        <div style="flex: 1 1 0; align-content: center;">
+          <blockquote class="slogan">Building evolutionary<br />Lit elements</blockquote>
+          <h1 class="ma-0" style="font-weight: 100; opacity: .8; letter-spacing: -.4px">
+            Lit-composition, a new way of defining Web Components
+          </h1>
+          <button class="px-4 py-2 mt-4 mr-2" style="font-weight: bold">Getting Started</button>
+          <button class="px-4 py-2 mt-4 mr-2" style="font-weight: bold">Install</button>
         </div>
-        <div class="logo-container" style="margin-right: 200px; align-self: center">
+        <div class="logo-container" style="margin-right: 100px; align-self: center">
           <div class="logo-bg"></div>
           <img src="${logo}" />
         </div>
       </div>
-      <div class="d-flex gap-4 pa-4 justify-center cards-row mx-auto" style="width: 50%; position: relative">
-        <lc-card>
-          <h2>Install</h2>
-          <button class="px-4 py-2">npm i lit-composition</button>
-          <button class="px-4 py-2">Get Started</button>
-        </lc-card>
-        <lc-card>
-          <h2>Documentation</h2>
-          <p>Get Started!</p>
-        </lc-card>
-      </div>
+      <div class="d-flex gap-4 pa-4 justify-center cards-row mx-auto" style="width: 65%; position: relative"></div>
     `
   },
 })

@@ -53,17 +53,17 @@ defineElement({
   ],
   setup() {
     return () =>
-      html` <nav class="align-center px-4">
+      html` <nav class="px-4">
         <lc-layout>
-          <div class="slot-wrapper">
+          <div class="slot-wrapper align-center">
             <div class="d-flex gc-4 align-center">
               <img height="40" src="${logo}" class="logo" alt="Lit composition logo" />
               <h1>Lit composition</h1>
             </div>
             <div style="align-self: stretch; flex-grow: 1;"></div>
-            <a class="pa-4" href="${links.Home}">Home</a>
-            <a class="pa-4" href="${links.GettingStarted}">Documentation</a>
-            <a class="pa-4" href="https://github.com/JorisAerts/lit-composition">
+            <a class="pa-2" href="${links.Home}">Home</a>
+            <a class="pa-2" href="${links.GettingStarted}">Documentation</a>
+            <a class="pa-2" href="https://github.com/JorisAerts/lit-composition">
               <svg
                 role="img"
                 viewBox="0 0 24 24"
