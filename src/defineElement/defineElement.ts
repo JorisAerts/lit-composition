@@ -1,7 +1,7 @@
 import type { CSSResultGroup, PropertyDeclaration } from 'lit'
 import { LitElement } from 'lit'
 import { dummyFn } from '../utils/dummyFn'
-import type { ValidCustomElementName } from '../utils/types'
+import type { ValidCustomElementName } from '../utils/ValidCustomElementName'
 import { isFunction, isString, isUndefined } from '../utils/is'
 import { withCurrentInstance } from '../currentInstance'
 import { withHooks } from './hooks'
@@ -114,7 +114,7 @@ const defineElementWithOptions = <
 
   // register the component
   if (register != false && name) {
-    registerCustomElement(name, result)
+    registerCustomElement(name as ValidCustomElementName, result)
   }
   return result as unknown as typeof LitElement
 }
