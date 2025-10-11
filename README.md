@@ -26,6 +26,15 @@ It requires no decorators and allows developers to write approved standardized J
 - Fast shorthand: defineElement('my-tag', () => html`...`)
 - Shadow DOM control via shadowRoot: false
 - Real LitElement subclass under the hood
+- Basic tag-name validation. For example, 'annotion-xml' is not allowed.
+- Context helpers: provide/consume context from anywhere in the tree
+- Signals: reactive state with local and shared signals
+- No dependencies
+- No decorators
+- No experimental flags
+- No special tooling
+- No special bundler config
+- No special runtime config
 
 ## Table of contents
 
@@ -190,8 +199,7 @@ defineElement({
 ```
 
 Elements created with defineElement() are LitElements under the hood and can be used together with other Lit elements.
-Using old school Lit elements with lit-composition reactivity, is provided through functionality that enables
-subscriptions to reactive state and side effects.
+They just have a dedicated lifecycle that lives in the constructor phase, with hooks to manage the lifecycle.
 
 ## Lifecycle hooks
 
@@ -221,6 +229,8 @@ defineElement({
     },
 })
 ```
+
+**NOTE:** Using these lifecycle hooks in a regular LitElement **won't work**.
 
 ## Props and default values
 
@@ -332,7 +342,33 @@ defineElement({
 })
 ```
 
-## Side effects with `watch`
+Signals can also be declared in another scope and shared between components:
+
+```ts
+import {defineElement} from 'lit-composition/signals'
+import {signal, computed} from '@lit-labs/signals'
+import {html} from 'lit'
+
+const sharedCount = signal(0)
+
+defineElement({
+    name: 'with-signal-1',
+    setup() {
+        const doubled = computed(() => sharedCount.get() * 2)
+        return () => html`<button @click=${() => sharedCount.set(sharedCount.get() + 1)}>${sharedCount.get()} → ${doubled.get()}</button>`
+    },
+})
+
+defineElement({
+    name: 'with-signal-2',
+    setup() {
+        const doubled = computed(() => sharedCount.get() * 2)
+        return () => html`<button @click=${() => sharedCount.set(sharedCount.get() + 1)}>${sharedCount.get()} → ${doubled.get()}</button>`
+    },
+})
+```
+
+### Side effects with `watch`
 
 Use `watch` from `@lit-labs/signals` to run side effects in response to signal changes. Call it inside `setup()`; it
 registers an effect that is automatically cleaned up when the component disconnects.
@@ -350,9 +386,7 @@ defineElement({
         const doubled = computed(() => count.get() * 2)
 
         // Run a side effect whenever `doubled` changes
-        watch(() => {
-            console.log('doubled is now', doubled.get())
-        })
+        watch(() => console.log('doubled is now', doubled.get()))
 
         return () => html`<button @click=${() => count.set(count.get() + 1)}>${count.get()} → ${doubled.get()}</button>`
     },
@@ -367,7 +401,10 @@ They are fully interoperable with Lit’s own @provide and @consume decorators.
 
 Install note: @lit/context is an optional peer dependency; install it if you use these helpers (see Installation above).
 
-Basic usage
+### Basic usage
+
+`provide` and `consume` are provided at from a dedicated entry point.
+They are about the same as `@provide` and `@consume` from @lit/context, but without decorator logic.
 
 ```ts
 import {html} from 'lit'
@@ -398,7 +435,7 @@ defineElement({
 })
 ```
 
-Interoperability with Lit decorators
+### Interoperability with Lit decorators
 
 You can mix and match providers/consumers across lit-composition and classic Lit components.
 
@@ -407,7 +444,7 @@ You can mix and match providers/consumers across lit-composition and classic Lit
 ```ts
 import {html, LitElement} from 'lit'
 import {customElement} from 'lit/decorators.js'
-import {consume as consumeDec, createContext} from '@lit/context'
+import {consume, createContext} from '@lit/context'
 import {defineElement} from 'lit-composition'
 import {provide} from 'lit-composition/context'
 
@@ -423,7 +460,8 @@ defineElement({
 
 @customElement('lit-consumer')
 class LitConsumer extends LitElement {
-    @consumeDec({context: ctx}) accessor value!: string
+    @consume({context: ctx})
+    accessor value!: string
 
     render() {
         return html`<div>${this.value}</div>`
@@ -436,7 +474,7 @@ class LitConsumer extends LitElement {
 ```ts
 import {html, LitElement} from 'lit'
 import {customElement} from 'lit/decorators.js'
-import {provide as provideDec, createContext} from '@lit/context'
+import {provide, createContext} from '@lit/context'
 import {defineElement} from 'lit-composition'
 import {consume} from 'lit-composition/context'
 
@@ -444,7 +482,8 @@ const ctx = createContext<string>(Symbol('demo-2'))
 
 @customElement('lit-provider')
 class LitProvider extends LitElement {
-    @provideDec({context: ctx}) accessor provided = 'from lit'
+    @provide({context: ctx})
+    accessor provided = 'from lit'
 
     render() {
         return html`<comp-consumer></comp-consumer>`
@@ -477,7 +516,7 @@ Supported defineElement options (compact overview):
 
 - name?: string — tag name; auto-registers unless register: false
 - register?: boolean — disable automatic customElements.define
-- parent?: typeof LitElement — extend a custom LitElement base/mixin
+- parent?: typeof LitElement — the element to extend from. can already be _mixed in_.
 - styles?: CSSResultGroup — equivalent to static styles
 - props?: Record<string, PropertyDeclaration> — like Lit static properties
 - shadowRoot?: boolean — false to render into light DOM
