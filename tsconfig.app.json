@@ -5,7 +5,7 @@
     "experimentalDecorators": false,
     "emitDecoratorMetadata": false,
     "useDefineForClassFields": false,
-    "module": "ESNext",
+    "module": "ES2022",
     "lib": [
       "ES2022",
       "DOM",
@@ -26,10 +26,11 @@
     "noUncheckedSideEffectImports": true
   },
   "exclude": [
-    "cypress/**",
-    "tests/**"
+    "cypress/**/*",
+    "tests/**/*",
+    "src/**/*.d.ts"
   ],
   "include": [
-    "src"
+    "src/**/*"
   ]
 }

@@ -38,6 +38,11 @@ const writePackageJson = async () => {
       require: './dist/context.cjs',
       types: './dist/context.d.ts',
     },
+    './signals': {
+      import: './dist/signals.js',
+      require: './dist/signals.cjs',
+      types: './dist/signals.d.ts',
+    },
   }
 
   packageJson.sideEffects = false

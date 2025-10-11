@@ -1,1 +1,1 @@
-export * from './lc-markdown.ts'
+export * from './lc-markdown'

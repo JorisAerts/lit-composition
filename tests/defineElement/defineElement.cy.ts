@@ -1,6 +1,7 @@
 import { css, html, unsafeCSS } from 'lit'
 import { customElement } from 'lit/decorators.js'
-import { defineElement, onConnected } from '../../src'
+import { onConnected } from '../../src'
+import { defineElement } from '../../src/signals'
 
 describe('defineElement', () => {
   describe('rendering', () => {
