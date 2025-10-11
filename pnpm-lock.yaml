@@ -74,12 +74,15 @@ importers:
       '@lit-labs/router':
         specifier: ^0.1.4
         version: 0.1.4
+      '@lit-labs/signals':
+        specifier: ^0.1.3
+        version: 0.1.3
       lit:
         specifier: ^3.3.1
         version: 3.3.1
       lit-composition:
-        specifier: workspace:*
-        version: link:..
+        specifier: 0.2.0
+        version: 0.2.0(@lit-labs/signals@0.1.3)(@lit/context@1.1.6)(lit@3.3.1)
     devDependencies:
       '@shikijs/markdown-it':
         specifier: ^3.13.0
@@ -1578,6 +1581,18 @@ packages:
       enquirer: '>= 2.3.0 < 3'
     peerDependenciesMeta:
       enquirer:
+        optional: true
+
+  lit-composition@0.2.0:
+    resolution: {integrity: sha512-9W+bWi/rvOkNGA9j006144ad68maCBW/Efv6uvvedWT5qCI0wLWhurIBF/SjFiOeAkVo/l1LcceWB3yhx/JdNg==}
+    peerDependencies:
+      '@lit-labs/signals': '>=0.1.3'
+      '@lit/context': '>=1.0.0'
+      lit: '>=3.0.0'
+    peerDependenciesMeta:
+      '@lit-labs/signals':
+        optional: true
+      '@lit/context':
         optional: true
 
   lit-element@4.2.1:
@@ -3833,6 +3848,13 @@ snapshots:
       wrap-ansi: 7.0.0
     optionalDependencies:
       enquirer: 2.4.1
+
+  lit-composition@0.2.0(@lit-labs/signals@0.1.3)(@lit/context@1.1.6)(lit@3.3.1):
+    dependencies:
+      lit: 3.3.1
+    optionalDependencies:
+      '@lit-labs/signals': 0.1.3
+      '@lit/context': 1.1.6
 
   lit-element@4.2.1:
     dependencies:
