@@ -1,2 +1,2 @@
-import './app'
 import './pages/home'
+import './app'

@@ -1,6 +1,11 @@
 :root {
     --background-color: #242424;
     --border-color: #404040;
+    --nav-bar-height: 56px;
+    --side-bar-width: 300px;
+
+    --page-width: 1280px;
+
 
     font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
     line-height: 1.5;
