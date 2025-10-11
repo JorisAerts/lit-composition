@@ -82,6 +82,8 @@ yarn add @lit/context
 
 ## Setup
 
+Besides adding the lit-composition pakcage to your project, no further setup is required.
+
 - TypeScript: No experimental decorators required. Recommended tsconfig: target ES2020+ (or latest your environment
   supports), module ES2020/ESNext, libs include DOM and ES2020. You do NOT need experimentalDecorators or
   emitDecoratorMetadata.
