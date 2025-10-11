@@ -1,3 +1,3 @@
 export * from './mixin'
 
-export * from './ValidCustomElementName'
+export type { ValidCustomElementName } from './ValidCustomElementName'

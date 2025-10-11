@@ -1,7 +1,7 @@
 import type { CSSResultGroup, PropertyDeclaration, ReactiveElement } from 'lit'
 import { LitElement } from 'lit'
 import { dummyFn } from '../utils/dummyFn'
-import type { ValidCustomElementName } from '../utils/ValidCustomElementName'
+import type { ValidatedCustomElementName, ValidCustomElementName } from '../utils/ValidCustomElementName'
 import { isFunction, isString, isSubclassOf, isUndefined } from '../utils/is'
 import { registerCustomElement } from '../utils/browser'
 import { SignalWatcher } from '@lit-labs/signals'
@@ -79,7 +79,7 @@ const defineElementWithOptions = <
   Render extends (this: Instance) => unknown,
   Setup extends (this: Instance, comp?: Instance) => void | Render,
 >(options: {
-  name?: Name
+  name?: ValidatedCustomElementName<Name>
   parent?: Parent
   styles?: Styles
   props?: Properties
@@ -129,7 +129,7 @@ export type DefinedComponent = ReturnType<typeof defineElement>
 export type DefinedComponentInstance = InstanceType<DefinedComponent>
 
 const defineFunctionalComponent = <Name extends ValidCustomElementName>(
-  name: Name,
+  name: ValidatedCustomElementName<Name>,
   render: () => unknown,
   opts = {} as {
     [K in keyof Parameters<typeof defineElementWithOptions>[0]]: Parameters<typeof defineElementWithOptions>[0][K]
@@ -150,7 +150,7 @@ export function defineElement<
   Render extends (this: Instance) => unknown,
   Setup extends (this: Instance, comp?: Instance) => void | Render,
 >(options: {
-  name?: Name
+  name?: ValidatedCustomElementName<Name>
   parent?: Parent
   styles?: Styles
   props?: Properties
