@@ -22,7 +22,6 @@ It requires no decorators and allows developers to write approved standardized J
 - TypeScript-first, but works in plain JS
 - Lit-compatible props with optional defaults
 - Composable lifecycle hooks (onConnected, onUpdated, …)
-- Reactive state with signals (`signal`, `computed`, `effect`) from `@lit-labs/signals`
 - Two ways to render: return a function from setup(), or provide render()
 - Fast shorthand: defineElement('my-tag', () => html`...`)
 - Shadow DOM control via shadowRoot: false
