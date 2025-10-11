@@ -293,7 +293,7 @@ export const doubled = computed(() => sharedCount.get() * 2)
 
 lit-composition embraces signals from `@lit-labs/signals` for local and shared reactive state.  
 A separate import is defined at 'lit-composition/signals' for importing `defineElement`.
-This class is just a version of `defineElement` is just a shorthand for
+This version of `defineElement` is just shorthand for:
 
 ```ts
 import {LitElement} from 'lit'
@@ -306,9 +306,8 @@ defineElement({
 })
 ```
 
-The class returned by that `defineElement()` extends SignalWatcher, so any signals you read in `
-setup()` or the render
-will keep the component in sync automatically.
+The class returned by that `defineElement()` extends SignalWatcher,
+so any signals you read in `setup()` or the render will keep the component in sync automatically.
 
 ```ts
 import {defineElement} from 'lit-composition/signals'
