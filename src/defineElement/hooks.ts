@@ -6,6 +6,9 @@ import { dummyFn } from '../utils/dummyFn'
 
 type LitRender = LitElement['render']
 
+/**
+ * @internal
+ */
 interface InternalOptions<DefinedComponents extends ReactiveElement> {
   render: LitRender
   connectedCallback: FnSubscriber<() => void>
