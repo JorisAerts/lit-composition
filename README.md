@@ -36,7 +36,7 @@ It requires no decorators and allows developers to write approved standardized J
 - Usage
 - No decorators required
 - Lifecycle hooks
-- Props and defaults
+- Props and default values
 - Shadow DOM control
 - Context: provide & consume
 - Options reference
@@ -48,12 +48,21 @@ use context helpers).
 The requirement on @lit-labs/signals is to wire signals into the returned Lit element.
 
 ```bash
-pnpm add lit @lit-labs/signals lit-composition
+pnpm add lit lit-composition
 # or
-npm i lit @lit-labs/signals lit-composition
+npm i lit lit-composition
 # or
-yarn add lit @lit-labs/signals lit-composition
+yarn add lit lit-composition
 ```
+
+If you want signals support:
+
+```bash
+pnpm add @lit-labs/signals
+# or
+npm i @lit-labs/signals
+# or
+yarn add @lit-labs/signals
 
 If you want to use provide / consume:
 
@@ -205,7 +214,7 @@ defineElement({
 })
 ```
 
-## Props and defaults
+## Props and default values
 
 The props option uses Lit’s property declaration shape. Types are inferred from constructors in TS.
 
@@ -270,14 +279,39 @@ defineElement({
 
 ## Signals (recommended)
 
-lit-composition embraces fine-grained signals from `@lit-labs/signals` for local and shared reactive state. The
-class returned by `defineElement()` integrates with the signal runtime (it extends SignalWatcher), so any signals you
-read in `setup()` or the render will keep the component in sync automatically.
+Signals work at module scope too so you can share tiny state between components
+(see [Lit Signals](https://lit.dev/docs/data/signals/)):
 
 ```ts
-import {defineElement} from 'lit-composition'
-import {html} from 'lit'
 import {signal, computed} from '@lit-labs/signals'
+
+export const sharedCount = signal(0)
+export const doubled = computed(() => sharedCount.get() * 2)
+```
+
+lit-composition embraces signals from `@lit-labs/signals` for local and shared reactive state.  
+A separate import is defined at 'lit-composition/signals' for importing `defineElement`.
+This class is just a version of `defineElement` is just a shorthand for
+
+```ts
+import {LitElement} from 'lit'
+import {SignalWatcher} from '@lit-labs/signals'
+import {defineElement} from 'lit-composition/signals'
+
+defineElement({
+    // ... other options
+    parent: SignalWatcher(LitElement), // LitElement, or whatever was passed as parent
+})
+```
+
+The class returned by that `defineElement()` extends SignalWatcher, so any signals you read in `
+setup()` or the render
+will keep the component in sync automatically.
+
+```ts
+import {defineElement} from 'lit-composition/signals'
+import {signal, computed} from '@lit-labs/signals'
+import {html} from 'lit'
 
 defineElement({
     name: 'with-signal',
@@ -288,15 +322,6 @@ defineElement({
         return () => html`<button @click=${() => count.set(count.get() + 1)}>${count.get()} → ${doubled.get()}</button>`
     },
 })
-```
-
-Signals work at module scope too so you can share tiny state between components:
-
-```ts
-import {signal, computed} from '@lit-labs/signals'
-
-export const sharedCount = signal(0)
-export const doubled = computed(() => sharedCount.get() * 2)
 ```
 
 ## Side effects with `watch`
