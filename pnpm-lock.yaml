@@ -81,8 +81,8 @@ importers:
         specifier: ^3.3.1
         version: 3.3.1
       lit-composition:
-        specifier: 0.2.1
-        version: 0.2.1(@lit-labs/signals@0.1.3)(@lit/context@1.1.6)(lit@3.3.1)
+        specifier: 0.2.2
+        version: 0.2.2(@lit-labs/signals@0.1.3)(@lit/context@1.1.6)(lit@3.3.1)
     devDependencies:
       '@shikijs/markdown-it':
         specifier: ^3.13.0
@@ -1583,8 +1583,8 @@ packages:
       enquirer:
         optional: true
 
-  lit-composition@0.2.1:
-    resolution: {integrity: sha512-D68O0e9RTFZ3DB0OJvXKCt/m/RiipfFxRF+Y/2L352ylDx4w4QXduFrY6Om+Tm8BBh0W+R9JR2A6XTW7L/cutw==}
+  lit-composition@0.2.2:
+    resolution: {integrity: sha512-VbidCzbkzAzolH9aghUlqoeo1vxVMOSDAcL05z4lCEN6VS3W4vLeUX29CYHpiLRLTrQJT9jkzwjf90oZlT43fw==}
     peerDependencies:
       '@lit-labs/signals': '>=0.1.3'
       '@lit/context': '>=1.0.0'
@@ -3849,7 +3849,7 @@ snapshots:
     optionalDependencies:
       enquirer: 2.4.1
 
-  lit-composition@0.2.1(@lit-labs/signals@0.1.3)(@lit/context@1.1.6)(lit@3.3.1):
+  lit-composition@0.2.2(@lit-labs/signals@0.1.3)(@lit/context@1.1.6)(lit@3.3.1):
     dependencies:
       lit: 3.3.1
     optionalDependencies:
