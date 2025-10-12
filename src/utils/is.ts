@@ -12,3 +12,4 @@ export const isSubclassOf = (subclass: Function, superclass: Function) =>
   subclass === superclass || Object.prototype.isPrototypeOf.call(superclass.prototype, subclass.prototype)
 export const isClass = (value: unknown): value is new (...args: any[]) => unknown =>
   isFunction(value) && Function.prototype.toString.call(value).trim().startsWith('class')
+export const isNumber = (value: unknown): value is number => value != null && value === +value
