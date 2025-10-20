@@ -30,11 +30,11 @@ importers:
         specifier: ^24.7.2
         version: 24.7.2
       cypress:
-        specifier: ^15.4.0
-        version: 15.4.0
+        specifier: ^15.5.0
+        version: 15.5.0
       cypress-ct-lit:
         specifier: ^1.0.0
-        version: 1.0.0(cypress@15.4.0)(lit@3.3.1)
+        version: 1.0.0(cypress@15.5.0)(lit@3.3.1)
       eslint:
         specifier: ^9.37.0
         version: 9.37.0
@@ -1093,8 +1093,8 @@ packages:
       cypress: '>=10.6.0'
       lit: ^2.0.0 || ^3.0.0
 
-  cypress@15.4.0:
-    resolution: {integrity: sha512-+GC/Y/LXAcaMCzfuM7vRx5okRmonceZbr0ORUAoOrZt/5n2eGK8yh04bok1bWSjZ32wRHrZESqkswQ6biArN5w==}
+  cypress@15.5.0:
+    resolution: {integrity: sha512-7jXBsh5hTfjxr9QQONC2IbdTj0nxSyU8x4eiarMZBzXzCj3pedKviUx8JnLcE4vL8e0TsOzp70WSLRORjEssRA==}
     engines: {node: ^20.1.0 || ^22.0.0 || >=24.0.0}
     hasBin: true
 
@@ -3286,12 +3286,12 @@ snapshots:
       shebang-command: 2.0.0
       which: 2.0.2
 
-  cypress-ct-lit@1.0.0(cypress@15.4.0)(lit@3.3.1):
+  cypress-ct-lit@1.0.0(cypress@15.5.0)(lit@3.3.1):
     dependencies:
-      cypress: 15.4.0
+      cypress: 15.5.0
       lit: 3.3.1
 
-  cypress@15.4.0:
+  cypress@15.5.0:
     dependencies:
       '@cypress/request': 3.0.9
       '@cypress/xvfb': 1.2.4(supports-color@8.1.1)
