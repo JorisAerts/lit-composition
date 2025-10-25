@@ -6,6 +6,7 @@
 [![npm](https://img.shields.io/npm/v/lit-composition/latest?logo=npm&label=NPM)](https://www.npmjs.com/package/lit-composition)
 [![size](https://img.shields.io/bundlephobia/minzip/lit-composition?label=Size)](https://www.npmjs.com/package/lit-composition)
 [![license](https://img.shields.io/github/license/JorisAerts/lit-composition?label=License)](https://github.com/JorisAerts/lit-composition?tab=MIT-1-ov-file)
+[![Mentioned in Awesome Lit](https://awesome.re/mentioned-badge.svg)](https://github.com/web-padawan/awesome-lit)
 
 A tiny toolkit for building Lit Web Components with less boilerplate.
 It requires no decorators and allows developers to write approved standardized JavaScript / TypeScript.
