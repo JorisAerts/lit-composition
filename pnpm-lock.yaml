@@ -12,8 +12,8 @@ importers:
         specifier: ^9.39.2
         version: 9.39.2
       '@lit-labs/signals':
-        specifier: ^0.1.3
-        version: 0.1.3
+        specifier: ^0.2.0
+        version: 0.2.0
       '@lit/context':
         specifier: ^1.1.6
         version: 1.1.6
@@ -75,14 +75,14 @@ importers:
         specifier: ^0.1.4
         version: 0.1.4
       '@lit-labs/signals':
-        specifier: ^0.1.3
-        version: 0.1.3
+        specifier: ^0.2.0
+        version: 0.2.0
       lit:
         specifier: ^3.3.1
         version: 3.3.1
       lit-composition:
         specifier: 0.2.2
-        version: 0.2.2(@lit-labs/signals@0.1.3)(@lit/context@1.1.6)(lit@3.3.1)
+        version: 0.2.2(@lit-labs/signals@0.2.0)(@lit/context@1.1.6)(lit@3.3.1)
     devDependencies:
       '@shikijs/markdown-it':
         specifier: ^3.13.0
@@ -376,8 +376,8 @@ packages:
   '@lit-labs/router@0.1.4':
     resolution: {integrity: sha512-xURH6fOPE0MYfXa1nyl+qTIhZRVWkFa2oggTRodKAI2q/HjA2Va7HEKe7fMm8DdnFE+zEI2aUGnStawKpVh3lQ==}
 
-  '@lit-labs/signals@0.1.3':
-    resolution: {integrity: sha512-P0yWgH5blwVyEwBg+WFspLzeu1i0ypJP1QB0l1Omr9qZLIPsUu0p4Fy2jshOg7oQyha5n163K3GJGeUhQQ682Q==}
+  '@lit-labs/signals@0.2.0':
+    resolution: {integrity: sha512-68plyIbciumbwKaiilhLNyhz4Vg6/+nJwDufG2xxWA9r/fUw58jxLHCAlKs+q1CE5Lmh3cZ3ShyYKnOCebEpVA==}
 
   '@lit-labs/ssr-dom-shim@1.4.0':
     resolution: {integrity: sha512-ficsEARKnmmW5njugNYKipTm4SFnbik7CXtoencDZzmzo/dQ+2Q0bgkzJuoJP20Aj0F+izzJjOqsnkd6F/o1bw==}
@@ -2583,7 +2583,7 @@ snapshots:
     dependencies:
       lit: 3.3.1
 
-  '@lit-labs/signals@0.1.3':
+  '@lit-labs/signals@0.2.0':
     dependencies:
       lit: 3.3.1
       signal-polyfill: 0.2.2
@@ -3879,11 +3879,11 @@ snapshots:
     optionalDependencies:
       enquirer: 2.4.1
 
-  lit-composition@0.2.2(@lit-labs/signals@0.1.3)(@lit/context@1.1.6)(lit@3.3.1):
+  lit-composition@0.2.2(@lit-labs/signals@0.2.0)(@lit/context@1.1.6)(lit@3.3.1):
     dependencies:
       lit: 3.3.1
     optionalDependencies:
-      '@lit-labs/signals': 0.1.3
+      '@lit-labs/signals': 0.2.0
       '@lit/context': 1.1.6
 
   lit-element@4.2.1:
